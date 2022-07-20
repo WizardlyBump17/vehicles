@@ -1,0 +1,14 @@
+allprojects {
+    apply plugin: 'java'
+
+    targetCompatibility = '16'
+    sourceCompatibility = '16'
+
+    group = 'com.wizardlybump17.vehicles'
+    version = '1.0.0'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
