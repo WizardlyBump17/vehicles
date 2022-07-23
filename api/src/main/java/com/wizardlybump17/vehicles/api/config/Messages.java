@@ -1,0 +1,16 @@
+package com.wizardlybump17.vehicles.api.config;
+
+import com.wizardlybump17.vehicles.api.Vehicles;
+import com.wizardlybump17.wlib.config.ConfigInfo;
+import com.wizardlybump17.wlib.config.Path;
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+@ConfigInfo(name = "messages.yml", holderType = Vehicles.class, saveDefault = true)
+public class Messages {
+
+    @Path(value = "errors.invalid-player", options = "fancy")
+    public static String invalidPlayer = "§cInvalid player.";
+    @Path(value = "errors.invalid-model", options = "fancy")
+    public static String invalidModel = "§cInvalid model.";
+}

@@ -1,0 +1,8 @@
+name: Vehicles
+version: '${version}'
+main: com.wizardlybump17.vehicles.Vehicles
+api-version: 1.17
+author: WizardlyBump17
+softdepend: [WLib, ProtocolLib, ModelEngine]
+commands:
+  vehicle:

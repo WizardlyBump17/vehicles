@@ -2,6 +2,26 @@ dependencies {
     compileOnly(
             'org.projectlombok:lombok:1.18.24',
             'org.jetbrains:annotations:23.0.0',
+            'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT',
+            'com.wizardlybump17.wlib:utils:1.4.1',
+            'com.wizardlybump17.wlib:objects:1.4.1',
+            'com.wizardlybump17.wlib:core:1.4.1',
+            'com.wizardlybump17.wlib:adapter:1.4.1',
+            'com.wizardlybump17.wlib:config:1.4.1',
+            'com.wizardlybump17.wlib:commands:1.4.1',
+            'com.ticxo.modelengine:api:R2.5.0',
+            'com.comphenix.protocol:ProtocolLib:4.7.0',
     )
     annotationProcessor('org.projectlombok:lombok:1.18.24')
+    implementation(project(':api'))
+}
+
+shadowJar {
+    archiveFileName = 'Vehicles-' + project.version + '.jar'
+}
+
+processResources {
+    filesMatching('**/plugin.yml') {
+        expand 'version': project.version
+    }
 }

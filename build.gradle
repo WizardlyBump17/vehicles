@@ -1,5 +1,10 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
+}
+
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     targetCompatibility = '16'
     sourceCompatibility = '16'
@@ -10,5 +15,19 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
+
+        maven {
+            url = 'https://mvn.lumine.io/repository/maven-public/'
+        }
+
+        maven {
+            url = 'https://repo.dmulloy2.net/repository/public/'
+        }
+    }
+
+    tasks {
+        compileJava {
+            options.encoding = 'UTF-8'
+        }
     }
 }
