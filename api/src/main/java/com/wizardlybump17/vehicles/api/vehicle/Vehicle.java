@@ -117,7 +117,10 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
      * If it is not the driver, it tries to remove the entity as passenger.
      * @param entity the entity to remove
      */
-    public void removeEntity(Entity entity) {
+    public void removeEntity(@Nullable Entity entity) {
+        if (entity == null)
+            return;
+
         if (entity.equals(getDriver()))
             setDriver(null);
         else
@@ -159,6 +162,12 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     @Override
     public String toString() {
         return "Vehicle{model=" + model + '}';
+    }
+
+    public void despawn() {
+        getEntity().remove();
+        getPassengers().forEach(this::removePassenger);
+        removeEntity(getDriver());
     }
 
     public static boolean isVehicle(Entity entity) {
