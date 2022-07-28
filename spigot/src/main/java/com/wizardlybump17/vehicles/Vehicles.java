@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.wizardlybump17.vehicles.api.config.Messages;
 import com.wizardlybump17.vehicles.api.model.CarModel;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
+import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.vehicles.command.VehicleCommand;
 import com.wizardlybump17.vehicles.command.reader.VehicleModelArgsReader;
 import com.wizardlybump17.vehicles.listener.PacketListener;
@@ -36,6 +37,12 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         new CommandManager(new BukkitCommandHolder(this)).registerCommands(new VehicleCommand(this));
 
         reloadModels();
+    }
+
+    @Override
+    public void onDisable() {
+        for (Vehicle<?> vehicle : getVehicleCache().getAll())
+            vehicle.despawn();
     }
 
     private void initConfigs() {
