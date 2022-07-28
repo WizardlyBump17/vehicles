@@ -4,6 +4,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import lombok.Getter;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.EntityCow;
 import org.bukkit.Location;
@@ -39,27 +40,27 @@ public class VehicleEntity extends EntityCow {
         return false;
     }
 
-    @Override
-    public void setHeadRotation(float f) {
-        super.setHeadRotation(f);
-        updateYaw();
-    }
-
-    @Override
-    public void setYRot(float f) {
-        super.setYRot(f);
-        updateYaw();
-    }
-
-    @Override
-    protected void setYawPitch(float f, float f1) {
-        super.setYawPitch(f, f1);
-        updateYaw();
-    }
-
     public void updateYaw() {
         if (handle != null)
             for (ActiveModel model : handle.getMegModel().getModeledEntity().getAllActiveModel().values())
                 model.setClamp(getXRot());
+    }
+
+    @Override
+    protected void collideNearby() {
+    }
+
+    @Override
+    public boolean isCollidable() {
+        return false;
+    }
+
+    @Override
+    public void collide(Entity entity) {
+    }
+
+    @Override
+    public boolean canCollideWithBukkit(Entity entity) {
+        return false;
     }
 }
