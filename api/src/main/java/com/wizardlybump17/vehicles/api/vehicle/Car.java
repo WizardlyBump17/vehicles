@@ -1,6 +1,7 @@
 package com.wizardlybump17.vehicles.api.vehicle;
 
 import com.ticxo.modelengine.api.model.ActiveModel;
+import com.wizardlybump17.vehicles.api.entity.VehicleEntity;
 import com.wizardlybump17.vehicles.api.model.CarModel;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
@@ -36,14 +37,11 @@ public class Car extends Vehicle<CarModel> {
         if (xxa == 0)
             return;
 
-        net.minecraft.world.entity.Entity entity = ((CraftEntity) getEntity()).getHandle();
+        VehicleEntity entity = (VehicleEntity) ((CraftEntity) getEntity()).getHandle();
         float yaw = entity.getYRot();
         yaw += xxa > 0 ? -getModel().getRotationSpeed() : getModel().getRotationSpeed();
-        yaw = Location.normalizeYaw(yaw);
-
-        entity.setYRot(yaw);
-        entity.x = yaw;
-        entity.setHeadRotation(yaw);
+        entity.getBukkitEntity().setRotation(yaw, 0);
+        entity.updateYaw();
     }
 
     @Override
