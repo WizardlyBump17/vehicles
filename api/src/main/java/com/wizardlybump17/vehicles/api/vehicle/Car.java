@@ -29,7 +29,7 @@ public class Car extends Vehicle<CarModel> {
         Vector direction = location.getDirection();
         direction.multiply(zza > 0 ? getSpeed() : -getSpeed() / getModel().getBreakForce(getSpeed()));
 
-        entity.setVelocity(direction);
+        entity.setVelocity(direction.setY(-1));
     }
 
     @Override
