@@ -120,84 +120,85 @@ public class VehicleEntity extends EntityCow {
         BlockPosition blockposition = this.av();
         IBlockData iblockdata = this.t.getType(blockposition);
         this.a(vec3d1.c, this.z, iblockdata, blockposition);
+
         if (this.isRemoved()) {
             this.t.getMethodProfiler().exit();
-        } else {
-            Vec3D vec3d2 = this.getMot();
-            if (vec3d.b != vec3d1.b)
-                this.setMot(0.0, vec3d2.c, vec3d2.d);
-
-            if (vec3d.d != vec3d1.d)
-                this.setMot(vec3d2.b, vec3d2.c, 0.0);
-
-            net.minecraft.world.level.block.Block block = iblockdata.getBlock();
-            if (vec3d.c != vec3d1.c)
-                block.a(this.t, this);
-
-            if (this.A && this.getBukkitEntity() instanceof org.bukkit.entity.Vehicle vehicle) {
-                Block bl = this.t.getWorld().getBlockAt(MathHelper.floor(this.locX()), MathHelper.floor(this.locY()), MathHelper.floor(this.locZ()));
-                if (vec3d.b > vec3d1.b) {
-                    bl = bl.getRelative(BlockFace.EAST);
-                } else if (vec3d.b < vec3d1.b) {
-                    bl = bl.getRelative(BlockFace.WEST);
-                } else if (vec3d.d > vec3d1.d) {
-                    bl = bl.getRelative(BlockFace.SOUTH);
-                } else if (vec3d.d < vec3d1.d) {
-                    bl = bl.getRelative(BlockFace.NORTH);
-                }
-
-                if (!bl.getType().isAir()) {
-                    VehicleBlockCollisionEvent event = new VehicleBlockCollisionEvent(vehicle, bl);
-                    this.t.getCraftServer().getPluginManager().callEvent(event);
-                }
-            }
-
-            if (this.z && !this.bE())
-                block.stepOn(this.t, blockposition, iblockdata, this);
-
-            MovementEmission entity_movementemission = this.aI();
-            if (entity_movementemission.a() && !this.isPassenger()) {
-                double d0 = vec3d1.b;
-                double d1 = vec3d1.c;
-                double d2 = vec3d1.d;
-                this.J = (float) (this.J + vec3d1.f() * 0.6);
-                if (!iblockdata.a(TagsBlock.aC) && !iblockdata.a(Blocks.oO))
-                    d1 = 0.0;
-
-                this.H += (float) vec3d1.h() * 0.6F;
-                this.I += (float) Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 0.6F;
-                if (this.I > ReflectionUtil.<Float>getField(Entity.class, this, "aC") && !iblockdata.isAir()) {
-                    ReflectionUtil.setField(Entity.class, this, "aC", this.az());
-                    if (!this.isInWater()) {
-                        if (entity_movementemission.c()) {
-                            this.b(iblockdata);
-                            this.b(blockposition, iblockdata);
-                        }
-
-                        if (entity_movementemission.b() && !iblockdata.a(TagsBlock.aY))
-                            this.a(GameEvent.Q);
-                    } else {
-                        if (entity_movementemission.c()) {
-                            Entity entity = this.isVehicle() && this.getRidingPassenger() != null ? this.getRidingPassenger() : this;
-                            float f = entity == this ? 0.35F : 0.4F;
-                            Vec3D vec3d3 = entity.getMot();
-                            float f1 = Math.min(1.0F, (float) Math.sqrt(vec3d3.b * vec3d3.b * 0.20000000298023224 + vec3d3.c * vec3d3.c + vec3d3.d * vec3d3.d * 0.20000000298023224) * f);
-                            this.d(f1);
-                        }
-
-                        if (entity_movementemission.b())
-                            this.a(GameEvent.R);
-                    }
-                } else if (iblockdata.isAir())
-                    this.au();
-            }
-
-            this.as();
-            float f2 = this.getBlockSpeedFactor();
-            this.setMot(this.getMot().d(f2, 1.0, f2));
-
-            this.t.getMethodProfiler().exit();
+            return;
         }
+
+        Vec3D vec3d2 = this.getMot();
+        if (vec3d.b != vec3d1.b)
+            this.setMot(0.0, vec3d2.c, vec3d2.d);
+
+        if (vec3d.d != vec3d1.d)
+            this.setMot(vec3d2.b, vec3d2.c, 0.0);
+
+        net.minecraft.world.level.block.Block block = iblockdata.getBlock();
+        if (vec3d.c != vec3d1.c)
+            block.a(this.t, this);
+
+        if (this.A && this.getBukkitEntity() instanceof org.bukkit.entity.Vehicle vehicle) {
+            Block bl = this.t.getWorld().getBlockAt(MathHelper.floor(this.locX()), MathHelper.floor(this.locY()), MathHelper.floor(this.locZ()));
+            if (vec3d.b > vec3d1.b)
+                bl = bl.getRelative(BlockFace.EAST);
+            else if (vec3d.b < vec3d1.b)
+                bl = bl.getRelative(BlockFace.WEST);
+            else if (vec3d.d > vec3d1.d)
+                bl = bl.getRelative(BlockFace.SOUTH);
+            else if (vec3d.d < vec3d1.d)
+                bl = bl.getRelative(BlockFace.NORTH);
+
+            if (!bl.getType().isAir()) {
+                VehicleBlockCollisionEvent event = new VehicleBlockCollisionEvent(vehicle, bl);
+                this.t.getCraftServer().getPluginManager().callEvent(event);
+            }
+        }
+
+        if (this.z && !this.bE())
+            block.stepOn(this.t, blockposition, iblockdata, this);
+
+        MovementEmission entity_movementemission = this.aI();
+        if (entity_movementemission.a() && !this.isPassenger()) {
+            double d0 = vec3d1.b;
+            double d1 = vec3d1.c;
+            double d2 = vec3d1.d;
+            this.J = (float) (this.J + vec3d1.f() * 0.6);
+            if (!iblockdata.a(TagsBlock.aC) && !iblockdata.a(Blocks.oO))
+                d1 = 0.0;
+
+            this.H += (float) vec3d1.h() * 0.6F;
+            this.I += (float) Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 0.6F;
+            if (this.I > ReflectionUtil.<Float>getField(Entity.class, this, "aC") && !iblockdata.isAir()) {
+                ReflectionUtil.setField(Entity.class, this, "aC", this.az());
+                if (!this.isInWater()) {
+                    if (entity_movementemission.c()) {
+                        this.b(iblockdata);
+                        this.b(blockposition, iblockdata);
+                    }
+
+                    if (entity_movementemission.b() && !iblockdata.a(TagsBlock.aY))
+                        this.a(GameEvent.Q);
+                } else {
+                    if (entity_movementemission.c()) {
+                        Entity entity = this.isVehicle() && this.getRidingPassenger() != null ? this.getRidingPassenger() : this;
+                        float f = entity == this ? 0.35F : 0.4F;
+                        Vec3D vec3d3 = entity.getMot();
+                        float f1 = Math.min(1.0F, (float) Math.sqrt(vec3d3.b * vec3d3.b * 0.20000000298023224 + vec3d3.c * vec3d3.c + vec3d3.d * vec3d3.d * 0.20000000298023224) * f);
+                        this.d(f1);
+                    }
+
+                    if (entity_movementemission.b())
+                        this.a(GameEvent.R);
+                }
+            } else if (iblockdata.isAir())
+                this.au();
+        }
+
+        this.as();
+        float f2 = this.getBlockSpeedFactor();
+        this.setMot(this.getMot().d(f2, 1.0, f2));
+
+        this.t.getMethodProfiler().exit();
     }
 
     private Vec3D g1(Vec3D vec3d) {
