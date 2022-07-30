@@ -24,7 +24,7 @@ public class PacketListener extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
-        Optional<Vehicle<?>> optional = cache.get(player, false);
+        Optional<Vehicle<?>> optional = cache.get(player, true);
         if (optional.isEmpty())
             return;
 

@@ -11,18 +11,29 @@ import org.bukkit.util.Vector;
 
 public class Car extends Vehicle<CarModel> {
 
+    public static final long SPEED_TIMEOUT = 100;
+
+    private long lastSpeedUpdate;
+
     public Car(CarModel model, ActiveModel megModel) {
         super(model, megModel);
     }
 
     @Override
     public void move(Player player, double xxa, double zza) {
-        if (zza == 0)
+        if (zza == 0 || !player.equals(getDriver()))
             return;
 
-        setSpeed(Math.min(getModel().getMaxSpeed(), getSpeed() + getModel().getAcceleration(getSpeed())));
-
         Entity entity = getEntity();
+        if (entity.getFallDistance() != 0)
+            return;
+
+        if (System.currentTimeMillis() - lastSpeedUpdate > SPEED_TIMEOUT)
+            setSpeed(0);
+
+        lastSpeedUpdate = System.currentTimeMillis();
+
+        setSpeed(Math.min(getModel().getMaxSpeed(), getSpeed() + getModel().getAcceleration(getSpeed())));
 
         Location location = entity.getLocation();
         location.setPitch(0);
@@ -34,10 +45,14 @@ public class Car extends Vehicle<CarModel> {
 
     @Override
     public void rotate(Player player, double xxa, double zza) {
-        if (xxa == 0)
+        if (xxa == 0 || zza == 0 || !player.equals(getDriver()))
             return;
 
         VehicleEntity entity = (VehicleEntity) ((CraftEntity) getEntity()).getHandle();
+
+        if (entity.K != 0)
+            return;
+
         float yaw = entity.getYRot();
         yaw += xxa > 0 ? -getModel().getRotationSpeed() : getModel().getRotationSpeed();
         entity.getBukkitEntity().setRotation(yaw, 0);
