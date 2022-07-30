@@ -15,9 +15,6 @@ import java.util.Map;
 
 public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M> {
 
-    public static final long SPEED_TIMEOUT = 100;
-    public static final long DAMAGE_DELAY = 1000;
-
     private long lastSpeedUpdate;
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
 
@@ -34,7 +31,7 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         if (entity.getFallDistance() != 0)
             return;
 
-        if (System.currentTimeMillis() - lastSpeedUpdate > SPEED_TIMEOUT)
+        if (System.currentTimeMillis() - lastSpeedUpdate > getModel().getSpeedTimeout())
             setSpeed(0);
 
         lastSpeedUpdate = System.currentTimeMillis();
@@ -84,10 +81,10 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
 
     @Override
     public void onCollide(Entity entity) {
-        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > DAMAGE_DELAY)
+        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > getModel().getDamageDelay())
             return;
 
         living.damage(getModel().getDamage(getSpeed()), getEntity());
-        damagedEntities.put(entity, System.currentTimeMillis() + DAMAGE_DELAY);
+        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamageDelay());
     }
 }

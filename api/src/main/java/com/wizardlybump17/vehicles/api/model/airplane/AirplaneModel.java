@@ -17,6 +17,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @SerializableAs("airplane")
@@ -85,7 +86,7 @@ public class AirplaneModel extends VehicleModel<Airplane> {
                 ((Number) args.getOrDefault("max-speed", 0d)).doubleValue(),
                 (Map<Double, Double>) args.get("acceleration"),
                 (Map<Double, Double>) args.get("damage"),
-                (Map<Double, Double>) args.get("break-force"),
+                new HashMap<>(),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0f)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
