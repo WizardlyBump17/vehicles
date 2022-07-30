@@ -18,7 +18,9 @@ import com.wizardlybump17.wlib.config.holder.BukkitConfigHolderFactory;
 import com.wizardlybump17.wlib.config.registry.ConfigHandlerRegistry;
 import com.wizardlybump17.wlib.config.registry.ConfigHolderFactoryRegistry;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;
 
@@ -29,7 +31,6 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
 
         initConfigs();
-        initVehicles();
         initListeners();
         initConfigSerializables();
 
@@ -37,12 +38,7 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         new CommandManager(new BukkitCommandHolder(this)).registerCommands(new VehicleCommand(this));
 
         reloadModels();
-    }
-
-    @Override
-    public void onDisable() {
-        for (Vehicle<?> vehicle : getVehicleCache().getAll())
-            vehicle.despawn();
+        initVehicles();
     }
 
     private void initConfigs() {
@@ -51,12 +47,19 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ConfigHandlerRegistry.getInstance().register(Messages.class);
     }
 
-    private void initVehicles() { //TODO load from database
+    private void initVehicles() {
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                Vehicle<?> vehicle = Vehicle.createVehicle(entity, getVehicleModelCache());
+                if (vehicle != null)
+                    getVehicleCache().add(vehicle);
+            }
+        }
     }
 
     private void initListeners() {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new VehicleListener(getVehicleCache()), this);
+        Bukkit.getPluginManager().registerEvents(new VehicleListener(getVehicleCache(), getVehicleModelCache()), this);
     }
 
     private void initConfigSerializables() {
