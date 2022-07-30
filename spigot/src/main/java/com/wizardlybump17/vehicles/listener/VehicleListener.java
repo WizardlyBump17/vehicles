@@ -3,12 +3,15 @@ package com.wizardlybump17.vehicles.listener;
 import com.wizardlybump17.vehicles.api.cache.VehicleCache;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Optional;
@@ -46,5 +49,28 @@ public class VehicleListener implements Listener {
 
         if (event.getDamager() instanceof Player player)
             optional.get().onDamage(player);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        Optional<Vehicle<?>> optional = cache.get(event.getPlayer(), true);
+        if (optional.isEmpty())
+            return;
+
+        event.setCancelled(true);
+
+        optional.get().removeEntity(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onGameModeChange(PlayerGameModeChangeEvent event) {
+        if (event.getNewGameMode() != GameMode.SPECTATOR)
+            return;
+
+        Optional<Vehicle<?>> optional = cache.get(event.getPlayer(), true);
+        if (optional.isEmpty())
+            return;
+
+        optional.get().removeEntity(event.getPlayer());
     }
 }
