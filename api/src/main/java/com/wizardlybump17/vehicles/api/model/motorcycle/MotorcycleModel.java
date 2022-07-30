@@ -1,4 +1,4 @@
-package com.wizardlybump17.vehicles.api.model;
+package com.wizardlybump17.vehicles.api.model.motorcycle;
 
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
@@ -6,7 +6,8 @@ import com.ticxo.modelengine.api.model.ModeledEntity;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.VehicleEntity;
-import com.wizardlybump17.vehicles.api.vehicle.Car;
+import com.wizardlybump17.vehicles.api.model.AutomobileModel;
+import com.wizardlybump17.vehicles.api.vehicle.motorcycle.Motorcycle;
 import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,15 +16,15 @@ import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 
 import java.util.Map;
 
-@SerializableAs("car")
-public class CarModel extends VehicleModel<Car> {
+@SerializableAs("motorcycle")
+public class MotorcycleModel extends AutomobileModel<Motorcycle> {
 
-    public CarModel(Vehicles plugin, String name, double maxSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight) {
+    public MotorcycleModel(Vehicles plugin, String name, double maxSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight) {
         super(plugin, name, maxSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight);
     }
 
     @Override
-    public Car createVehicle(Location location, String plate) {
+    public Motorcycle createVehicle(Location location, String plate) {
         World world = location.getWorld();
         if (world == null)
             throw new IllegalArgumentException("invalid location: " + location);
@@ -31,9 +32,9 @@ public class CarModel extends VehicleModel<Car> {
         ActiveModel model = getMegModel();
         model.setClamp(location.getYaw());
 
-        Car car = new Car(this, plate, model);
+        Motorcycle automobile = new Motorcycle(this, plate, model);
 
-        VehicleEntity entity = new VehicleEntity(location, car);
+        VehicleEntity entity = new VehicleEntity(location, automobile);
         ((CraftWorld) world).getHandle().addEntity(entity);
 
         ModeledEntity modeledEntity = ModelEngineAPI.api.getModelManager().createModeledEntity(entity.getBukkitEntity());
@@ -45,13 +46,13 @@ public class CarModel extends VehicleModel<Car> {
         mountHandler.setSteerable(true);
         mountHandler.setCanCarryPassenger(true);
 
-        car.markEntity();
-        return car;
+        automobile.markEntity();
+        return automobile;
     }
 
     @SuppressWarnings("unchecked")
-    public static CarModel deserialize(Map<String, Object> args) {
-        return new CarModel(
+    public static MotorcycleModel deserialize(Map<String, Object> args) {
+        return new MotorcycleModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
                 ((Number) args.getOrDefault("max-speed", 0)).doubleValue(),

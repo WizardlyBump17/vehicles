@@ -2,7 +2,7 @@ package com.wizardlybump17.vehicles.api.vehicle;
 
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.entity.VehicleEntity;
-import com.wizardlybump17.vehicles.api.model.CarModel;
+import com.wizardlybump17.vehicles.api.model.AutomobileModel;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
@@ -13,7 +13,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Car extends Vehicle<CarModel> {
+public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M> {
 
     public static final long SPEED_TIMEOUT = 100;
     public static final long DAMAGE_DELAY = 1000;
@@ -21,7 +21,7 @@ public class Car extends Vehicle<CarModel> {
     private long lastSpeedUpdate;
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
 
-    public Car(CarModel model, String plate, ActiveModel megModel) {
+    protected Automobile(M model, String plate, ActiveModel megModel) {
         super(model, plate, megModel);
     }
 
