@@ -31,11 +31,11 @@ import org.bukkit.util.Vector;
 import java.util.stream.Stream;
 
 @Getter
-public class VehicleEntity extends EntityCow {
+public class AutomobileEntity extends EntityCow {
 
     private final Vehicle<?> handle;
 
-    public VehicleEntity(Location location, Vehicle<?> vehicle) {
+    public AutomobileEntity(Location location, Vehicle<?> vehicle) {
         super(EntityTypes.n, ((CraftWorld) location.getWorld()).getHandle());
         getBukkitEntity().teleport(location);
         handle = vehicle;

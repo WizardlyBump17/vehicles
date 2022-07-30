@@ -1,7 +1,7 @@
 package com.wizardlybump17.vehicles.api.vehicle;
 
 import com.ticxo.modelengine.api.model.ActiveModel;
-import com.wizardlybump17.vehicles.api.entity.VehicleEntity;
+import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
@@ -54,7 +54,7 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         if (xxa == 0 || zza == 0 || !player.equals(getDriver()))
             return;
 
-        VehicleEntity entity = (VehicleEntity) ((CraftEntity) getEntity()).getHandle();
+        AutomobileEntity entity = (AutomobileEntity) ((CraftEntity) getEntity()).getHandle();
 
         if (entity.K != 0)
             return;

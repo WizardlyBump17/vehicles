@@ -5,7 +5,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
-import com.wizardlybump17.vehicles.api.entity.VehicleEntity;
+import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
 import com.wizardlybump17.vehicles.api.vehicle.motorcycle.Motorcycle;
 import lombok.NonNull;
@@ -34,7 +34,7 @@ public class MotorcycleModel extends AutomobileModel<Motorcycle> {
 
         Motorcycle automobile = new Motorcycle(this, plate, model);
 
-        VehicleEntity entity = new VehicleEntity(location, automobile);
+        AutomobileEntity entity = new AutomobileEntity(location, automobile);
         ((CraftWorld) world).getHandle().addEntity(entity);
 
         ModeledEntity modeledEntity = ModelEngineAPI.api.getModelManager().createModeledEntity(entity.getBukkitEntity());
