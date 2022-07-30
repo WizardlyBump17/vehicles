@@ -63,6 +63,9 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
      * @return true if the entity was added as passenger, false if not
      */
     public boolean addPassenger(Entity entity) {
+        if (hasPassenger(entity))
+            return false;
+
         IMountHandler handler = megModel.getModeledEntity().getMountHandler();
         for (MountablePart part : handler.getPassengers().values()) {
             if (part.hasPassengers())
@@ -105,6 +108,9 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
      * @param entity the entity to add
      */
     public void addEntity(Entity entity) {
+        if (hasEntity(entity))
+            return;
+
         if (getDriver() == null)
             setDriver(entity);
         else
