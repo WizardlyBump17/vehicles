@@ -6,17 +6,23 @@ import com.wizardlybump17.vehicles.api.model.CarModel;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Car extends Vehicle<CarModel> {
 
     public static final long SPEED_TIMEOUT = 100;
+    public static final long DAMAGE_DELAY = 1000;
 
     private long lastSpeedUpdate;
+    private final Map<Entity, Long> damagedEntities = new HashMap<>();
 
-    public Car(CarModel model, ActiveModel megModel) {
-        super(model, megModel);
+    public Car(CarModel model, String plate, ActiveModel megModel) {
+        super(model, plate, megModel);
     }
 
     @Override
@@ -75,5 +81,14 @@ public class Car extends Vehicle<CarModel> {
     @Override
     public void onInteract(Player player) {
         addEntity(player);
+    }
+
+    @Override
+    public void onCollide(Entity entity) {
+        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > DAMAGE_DELAY)
+            return;
+
+        living.damage(getModel().getDamage(getSpeed()), getEntity());
+        damagedEntities.put(entity, System.currentTimeMillis() + DAMAGE_DELAY);
     }
 }

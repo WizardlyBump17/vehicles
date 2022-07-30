@@ -4,6 +4,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.mount.MountablePart;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
+import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
 import com.wizardlybump17.vehicles.api.controller.EmptyMountController;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import lombok.Data;
@@ -13,27 +14,30 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 public abstract class Vehicle<M extends VehicleModel<?>> {
 
-    protected static final NamespacedKey KEY = new NamespacedKey(Vehicles.getInstance(), "vehicle");
+    protected static final NamespacedKey VEHICLE = new NamespacedKey(Vehicles.getInstance(), "vehicle");
+    protected static final NamespacedKey VEHICLE_PLATE = new NamespacedKey(Vehicles.getInstance(), "plate");
+    protected static final NamespacedKey VEHICLE_TYPE = new NamespacedKey(Vehicles.getInstance(), "type");
 
     private final List<Player> viewers = new ArrayList<>();
     private final M model;
+    private final String plate;
     private final ActiveModel megModel;
     private double speed;
 
-    protected Vehicle(M model, ActiveModel megModel) {
+    protected Vehicle(M model, String plate, ActiveModel megModel) {
         this.model = model;
         this.megModel = megModel;
+        this.plate = plate;
     }
 
     public abstract void move(Player player, double xxa, double zza);
@@ -47,6 +51,8 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     public abstract void onDamage(Player player);
 
     public abstract void onInteract(Player player);
+
+    public abstract void onCollide(Entity entity);
 
     public void removePassenger(Entity entity) {
         megModel.getModeledEntity().getMountHandler().removePassenger(entity);
@@ -149,7 +155,11 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     }
 
     public void markEntity() {
-        getEntity().getPersistentDataContainer().set(KEY, PersistentDataType.STRING, model.getName());
+        PersistentDataContainer container = getEntity().getPersistentDataContainer();
+        PersistentDataContainer data = container.getAdapterContext().newPersistentDataContainer();
+        data.set(VEHICLE_PLATE, PersistentDataType.STRING, plate);
+        data.set(VEHICLE_TYPE, PersistentDataType.STRING, model.getName());
+        container.set(VEHICLE, PersistentDataType.TAG_CONTAINER, data);
     }
 
     @Override
@@ -177,10 +187,38 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     }
 
     public static boolean isVehicle(Entity entity) {
-        return entity.getPersistentDataContainer().has(KEY, PersistentDataType.STRING);
+        return entity.getPersistentDataContainer().has(VEHICLE, PersistentDataType.TAG_CONTAINER);
     }
 
-    public static String getVehicleModel(Entity entity) {
-        return entity.getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
+    public static Map<String, Object> getVehicleData(Entity entity) {
+        PersistentDataContainer container = entity.getPersistentDataContainer().get(VEHICLE, PersistentDataType.TAG_CONTAINER);
+        if (container == null)
+            return new HashMap<>();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("plate", container.get(VEHICLE_PLATE, PersistentDataType.STRING));
+        data.put("type", container.get(VEHICLE_TYPE, PersistentDataType.STRING));
+        return data;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <V extends Vehicle<?>> V createVehicle(Entity entity, VehicleModelCache cache) {
+        if (!isVehicle(entity))
+            return null;
+
+        entity.remove();
+
+        Map<String, Object> data = getVehicleData(entity);
+        String type = (String) data.get("type");
+        String plate = (String) data.get("plate");
+        if (type == null || plate == null)
+            return null;
+
+        VehicleModel<?> model = cache.get(type).orElse(null);
+        if (model == null)
+            return null;
+
+        return (V) model.createVehicle(entity.getLocation(), plate);
     }
 }

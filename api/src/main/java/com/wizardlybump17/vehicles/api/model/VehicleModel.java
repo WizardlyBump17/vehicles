@@ -55,7 +55,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
         return MapUtil.getValue(breakForce, speed);
     }
 
-    public abstract V createVehicle(Location location);
+    public abstract V createVehicle(Location location, String plate);
 
     public ActiveModel getMegModel() {
         return Objects.requireNonNull(ModelEngineAPI.api.getModelManager().createActiveModel(megModel), "invalid ModelEngine model: " + megModel);

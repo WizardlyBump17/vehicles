@@ -23,14 +23,15 @@ public class CarModel extends VehicleModel<Car> {
     }
 
     @Override
-    public Car createVehicle(Location location) {
-        ActiveModel model = getMegModel();
-
+    public Car createVehicle(Location location, String plate) {
         World world = location.getWorld();
         if (world == null)
             throw new IllegalArgumentException("invalid location: " + location);
 
-        Car car = new Car(this, model);
+        ActiveModel model = getMegModel();
+        model.setClamp(location.getYaw());
+
+        Car car = new Car(this, plate, model);
 
         VehicleEntity entity = new VehicleEntity(location, car);
         ((CraftWorld) world).getHandle().addEntity(entity);
@@ -38,6 +39,7 @@ public class CarModel extends VehicleModel<Car> {
         ModeledEntity modeledEntity = ModelEngineAPI.api.getModelManager().createModeledEntity(entity.getBukkitEntity());
         modeledEntity.addActiveModel(model);
         modeledEntity.setInvisible(true);
+        modeledEntity.detectPlayers();
 
         IMountHandler mountHandler = modeledEntity.getMountHandler();
         mountHandler.setSteerable(true);

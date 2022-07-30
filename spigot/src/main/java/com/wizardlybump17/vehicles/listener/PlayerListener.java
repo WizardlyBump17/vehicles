@@ -3,6 +3,7 @@ package com.wizardlybump17.vehicles.listener;
 import com.wizardlybump17.vehicles.Vehicles;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
+import com.wizardlybump17.wlib.util.RandomUtil;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,7 +27,7 @@ public record PlayerListener(Vehicles plugin) implements Listener {
 
         Location location = event.getPlayer().getEyeLocation();
         location.setPitch(0);
-        Vehicle<?> vehicle = optional.get().createVehicle(location);
+        Vehicle<?> vehicle = optional.get().createVehicle(location, RandomUtil.randomString(8));
         plugin.getVehicleCache().add(vehicle);
     }
 }
