@@ -54,6 +54,13 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
 
     public abstract void onCollide(Entity entity);
 
+    /**
+     * Called by {@link com.wizardlybump17.vehicles.api.task.CheckVehiclesTask} each tick asynchronously. Can be useful for anything.<br>
+     * The default implementation does nothing.
+     */
+    public void check() {
+    }
+
     public void removePassenger(Entity entity) {
         megModel.getModeledEntity().getMountHandler().removePassenger(entity);
     }
