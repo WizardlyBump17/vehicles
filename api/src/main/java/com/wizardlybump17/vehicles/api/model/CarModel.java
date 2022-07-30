@@ -18,8 +18,8 @@ import java.util.Map;
 @SerializableAs("car")
 public class CarModel extends VehicleModel<Car> {
 
-    public CarModel(Vehicles plugin, String name, double maxSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed) {
-        super(plugin, name, maxSpeed, acceleration, damage, breakForce, megModel, rotationSpeed);
+    public CarModel(Vehicles plugin, String name, double maxSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight) {
+        super(plugin, name, maxSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight);
     }
 
     @Override
@@ -57,7 +57,8 @@ public class CarModel extends VehicleModel<Car> {
                 (Map<Double, Double>) args.get("damage"),
                 (Map<Double, Double>) args.get("break-force"),
                 (String) args.get("meg-model"),
-                ((Number) args.getOrDefault("rotation-speed", 0)).floatValue()
+                ((Number) args.getOrDefault("rotation-speed", 0)).floatValue(),
+                ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue()
         );
     }
 }

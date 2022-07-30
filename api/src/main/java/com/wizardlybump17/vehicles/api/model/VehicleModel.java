@@ -41,6 +41,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     @NonNull
     private String megModel;
     private float rotationSpeed;
+    private float jumpHeight;
 
     public double getAcceleration(double speed) {
         return MapUtil.getValue(acceleration, speed);
@@ -78,7 +79,8 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
                 "damage", damage,
                 "break-force", breakForce,
                 "meg-model", megModel,
-                "rotation-speed", rotationSpeed
+                "rotation-speed", rotationSpeed,
+                "jump-height", jumpHeight
         ));
     }
 }

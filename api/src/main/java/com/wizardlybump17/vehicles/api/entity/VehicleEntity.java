@@ -40,6 +40,7 @@ public class VehicleEntity extends EntityCow {
         super(EntityTypes.n, ((CraftWorld) location.getWorld()).getHandle());
         setPosition(location.getX(), location.getY(), location.getZ());
         handle = vehicle;
+        O = handle.getModel().getJumpHeight();
     }
 
     @Override
@@ -204,8 +205,7 @@ public class VehicleEntity extends EntityCow {
         VoxelShapeCollision voxelshapecollision = VoxelShapeCollision.a(this);
         VoxelShape voxelshape = this.t.getWorldBorder().c();
         Stream<VoxelShape> stream = VoxelShapes.c(voxelshape, VoxelShapes.a(axisalignedbb.shrink(1.0E-7)), OperatorBoolean.i) ? Stream.empty() : Stream.of(voxelshape);
-        Stream<VoxelShape> stream1 = this.t.c(this, axisalignedbb.b(vec3d), entity -> true);
-        StreamAccumulator<VoxelShape> streamaccumulator = new StreamAccumulator<>(Stream.concat(stream1, stream));
+        StreamAccumulator<VoxelShape> streamaccumulator = new StreamAccumulator<>(stream);
         Vec3D vec3d1 = vec3d.g() == 0.0 ? vec3d : a(this, vec3d, axisalignedbb, this.t, voxelshapecollision, streamaccumulator);
         boolean flag = vec3d.b != vec3d1.b;
         boolean flag1 = vec3d.c != vec3d1.c;
@@ -227,7 +227,7 @@ public class VehicleEntity extends EntityCow {
         return vec3d1;
     }
 
-    public boolean collide(Vector velocity) {
+    public boolean collidesWithBlocks(Vector velocity) {
         Vec3D vec3d = new Vec3D(velocity.getX(), velocity.getY(), velocity.getZ());
 
         if (this.D.g() > 1.0E-7) {
