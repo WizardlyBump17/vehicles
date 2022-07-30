@@ -8,6 +8,7 @@
 ## Requirements
 1. JDK 16 or higher
 2. Gradle installed
+3. [BuildTools](https://www.spigotmc.org/wiki/buildtools/) ran for the version 1.17.1
 
 ## Building
 3. Clone the repository
