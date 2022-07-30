@@ -13,4 +13,9 @@ public class Messages {
     public static String invalidPlayer = "§cInvalid player.";
     @Path(value = "errors.invalid-model", options = "fancy")
     public static String invalidModel = "§cInvalid model.";
+    @Path(value = "errors.not-in-vehicle", options = "fancy")
+    public static String notInVehicle = "§cYou are not in a vehicle.";
+
+    @Path(value = "command.vehicle.leave.left", options = "fancy")
+    public static String leftVehicle = "§aYou left the vehicle.";
 }
