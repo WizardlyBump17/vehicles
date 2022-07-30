@@ -8,6 +8,8 @@ import java.util.Map;
 public class MapUtil {
 
     public static double getValue(Map<Double, Double> map, double current) {
+        current = NumberUtil.precision(current, 4);
+
         if (map.containsKey(current))
             return map.get(current);
 

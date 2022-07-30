@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPosition;
 import net.minecraft.tags.TagsBlock;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StreamAccumulator;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EnumMoveType;
@@ -38,7 +37,7 @@ public class VehicleEntity extends EntityCow {
 
     public VehicleEntity(Location location, Vehicle<?> vehicle) {
         super(EntityTypes.n, ((CraftWorld) location.getWorld()).getHandle());
-        setPosition(location.getX(), location.getY(), location.getZ());
+        getBukkitEntity().teleport(location);
         handle = vehicle;
         O = handle.getModel().getJumpHeight();
     }
@@ -52,16 +51,6 @@ public class VehicleEntity extends EntityCow {
         return true;
     }
 
-    @Override
-    public boolean damageEntity(DamageSource damagesource, float f) {
-        return false;
-    }
-
-    @Override
-    protected boolean damageEntity0(DamageSource damagesource, float f) {
-        return false;
-    }
-
     public void updateYaw() {
         if (handle != null)
             for (ActiveModel model : handle.getMegModel().getModeledEntity().getAllActiveModel().values())
@@ -69,21 +58,12 @@ public class VehicleEntity extends EntityCow {
     }
 
     @Override
-    protected void collideNearby() {
-    }
-
-    @Override
-    public boolean isCollidable() {
-        return false;
-    }
-
-    @Override
     public void collide(Entity entity) {
+        handle.onCollide(entity.getBukkitEntity());
     }
 
     @Override
-    public boolean canCollideWithBukkit(Entity entity) {
-        return false;
+    protected void collideNearby() {
     }
 
     @Override

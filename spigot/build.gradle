@@ -7,6 +7,7 @@ dependencies {
             'com.wizardlybump17.wlib:objects:1.4.1',
             'com.wizardlybump17.wlib:core:1.4.1',
             'com.wizardlybump17.wlib:adapter:1.4.1',
+            'com.wizardlybump17.wlib:utils:1.4.1',
             'com.wizardlybump17.wlib:config:1.4.1',
             'com.wizardlybump17.wlib:commands:1.4.1',
             'com.ticxo.modelengine:api:R2.5.0',
