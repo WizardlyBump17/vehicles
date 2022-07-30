@@ -10,7 +10,7 @@ allprojects {
     sourceCompatibility = '16'
 
     group = 'com.wizardlybump17.vehicles'
-    version = 'B1.0.0'
+    version = 'B1.1.0'
 
     repositories {
         mavenLocal()
