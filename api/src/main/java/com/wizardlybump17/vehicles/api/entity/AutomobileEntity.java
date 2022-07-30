@@ -1,6 +1,5 @@
 package com.wizardlybump17.vehicles.api.entity;
 
-import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.vehicles.util.ReflectionUtil;
 import lombok.Getter;
@@ -49,12 +48,6 @@ public class AutomobileEntity extends EntityCow {
     @Override
     public boolean isSilent() {
         return true;
-    }
-
-    public void updateYaw() {
-        if (handle != null)
-            for (ActiveModel model : handle.getMegModel().getModeledEntity().getAllActiveModel().values())
-                model.setClamp(getXRot());
     }
 
     @Override

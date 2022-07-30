@@ -36,6 +36,7 @@ public class MotorcycleModel extends AutomobileModel<Motorcycle> {
 
         AutomobileEntity entity = new AutomobileEntity(location, automobile);
         ((CraftWorld) world).getHandle().addEntity(entity);
+        model.setClamp(0);
 
         ModeledEntity modeledEntity = ModelEngineAPI.api.getModelManager().createModeledEntity(entity.getBukkitEntity());
         modeledEntity.addActiveModel(model);

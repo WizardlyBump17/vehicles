@@ -62,7 +62,6 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         float yaw = entity.getYRot();
         yaw += xxa > 0 ? -getModel().getRotationSpeed() : getModel().getRotationSpeed();
         entity.getBukkitEntity().setRotation(yaw, 0);
-        entity.updateYaw();
     }
 
     @Override
