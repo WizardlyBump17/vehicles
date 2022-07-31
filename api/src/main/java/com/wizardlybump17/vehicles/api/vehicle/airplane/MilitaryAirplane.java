@@ -24,7 +24,7 @@ public class MilitaryAirplane extends Airplane {
     public boolean onLeftClick(Player player, EquipmentSlot hand) {
         if (player.equals(getDriver()) && tntDelay.getOrDefault(player, System.currentTimeMillis()) <= System.currentTimeMillis()) {
             shootTnt();
-            tntDelay.put(player, System.currentTimeMillis() + ((MilitaryAirplaneModel) getModel()).getTntDelay());
+            tntDelay.put(player, System.currentTimeMillis() + getModel().getTntDelay());
         }
         return true;
     }
@@ -33,7 +33,7 @@ public class MilitaryAirplane extends Airplane {
     public void onDamage(Player player) {
         if (player.equals(getDriver()) && tntDelay.getOrDefault(player, System.currentTimeMillis()) <= System.currentTimeMillis()) {
             shootTnt();
-            tntDelay.put(player, System.currentTimeMillis() + ((MilitaryAirplaneModel) getModel()).getTntDelay());
+            tntDelay.put(player, System.currentTimeMillis() + getModel().getTntDelay());
         }
     }
 
@@ -42,20 +42,23 @@ public class MilitaryAirplane extends Airplane {
         if (part == null)
             return;
 
-        MilitaryAirplaneModel model = (MilitaryAirplaneModel) getModel();
-
         Location location = part.getWorldPosition();
-        if (model.isUseDriverRotation() && getDriver() != null) {
+        if (getModel().isUseDriverRotation() && getDriver() != null) {
             Location driverLocation = getDriver().getLocation();
             location.setYaw(driverLocation.getYaw());
             location.setPitch(driverLocation.getPitch());
 
-            if (location.getPitch() > model.getMaxTntPitch())
-                location.setPitch(model.getMaxTntPitch());
-            else if (location.getPitch() < model.getMinTntPitch())
-                location.setPitch(model.getMinTntPitch());
+            if (location.getPitch() > getModel().getMaxTntPitch())
+                location.setPitch(getModel().getMaxTntPitch());
+            else if (location.getPitch() < getModel().getMinTntPitch())
+                location.setPitch(getModel().getMinTntPitch());
         } else
             location.setYaw(((CraftEntity) getEntity()).getHandle().getBukkitYaw());
-        model.createTNT(location);
+        getModel().createTNT(location);
+    }
+
+    @Override
+    public MilitaryAirplaneModel getModel() {
+        return (MilitaryAirplaneModel) super.getModel();
     }
 }
