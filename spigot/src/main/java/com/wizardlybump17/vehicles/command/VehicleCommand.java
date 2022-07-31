@@ -33,7 +33,7 @@ public record VehicleCommand(Vehicles plugin) {
     @Command(execution = "vehicle leave")
     public void leave(PlayerSender sender) {
         Optional<Vehicle<?>> optional = plugin.getVehicleCache().get(sender.getHandle(), true);
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             sender.sendMessage(Messages.notInVehicle);
             return;
         }
