@@ -14,6 +14,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +54,26 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     public abstract void onInteract(Player player);
 
     public abstract void onCollide(Entity entity);
+
+    /**
+     * Called when the player do a left click while inside the vehicle.
+     * @param player the player who clicked
+     * @param hand the used hand
+     * @return if the event should be cancelled
+     */
+    public boolean onLeftClick(Player player, EquipmentSlot hand) {
+        return false;
+    }
+
+    /**
+     * Called when the player do a right click while inside the vehicle.
+     * @param player the player who clicked
+     * @param hand the used hand
+     * @return if the event should be cancelled
+     */
+    public boolean onRightClick(Player player, EquipmentSlot hand) {
+        return false;
+    }
 
     /**
      * Called by {@link com.wizardlybump17.vehicles.api.task.CheckVehiclesTask} each tick asynchronously. Can be useful for anything.<br>

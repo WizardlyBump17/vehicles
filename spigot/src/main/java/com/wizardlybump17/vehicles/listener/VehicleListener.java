@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -97,5 +98,19 @@ public class VehicleListener implements Listener {
 
             model.createVehicle(entity.getLocation(), data.get("plate").toString());
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Optional<Vehicle<?>> optional = cache.get(player, true);
+        if (optional.isEmpty())
+            return;
+
+        Vehicle<?> vehicle = optional.get();
+        if (event.getAction().name().contains("LEFT"))
+            event.setCancelled(vehicle.onLeftClick(player, event.getHand()));
+        else if (event.getAction().name().contains("RIGHT"))
+            event.setCancelled(vehicle.onRightClick(player, event.getHand()));
     }
 }
