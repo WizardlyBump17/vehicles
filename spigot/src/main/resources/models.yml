@@ -77,3 +77,41 @@ models:
       max: 45
       speed: 0.4
     speed-timeout: 100
+  - ==: military-airplane
+    name: Airplane 2
+    max-speed: 1.5
+    acceleration:
+      0.5: 0.02
+      1.0: 0.04
+      1.5: 0.06
+      2.0: 0.08
+      2.5: 0.1
+    damage:
+      0.5: 10.0
+      1.0: 20.0
+      1.5: 30.0
+      2.0: 40.0
+      2.5: 50.0
+      3.0: 60.0
+    meg-model: airplane2
+    rotation-speed: 3
+    jump-height: 0
+    pitch:
+      min: -45
+      max: 45
+      speed: 0.4
+    speed-timeout: 100
+    tnt:
+      fuse-ticks: 80
+      use-driver-rotation: true
+      direction:
+        ==: Vector
+        x: 4.0
+        y: 2.0
+        z: 4.0
+      max-pitch: 90
+      min-pitch: 0
+      delay: 1000
+      set-fire: true
+      break-blocks: true
+      power: 30
