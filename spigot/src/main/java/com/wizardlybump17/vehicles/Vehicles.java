@@ -24,13 +24,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
 public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
 
+    private boolean dependenciesLoaded = true;
+
     @Override
     public void onEnable() {
+        if (!checkDependencies())
+            return;
+
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
 
         initConfigs();
@@ -48,8 +54,27 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
 
     @Override
     public void onDisable() {
-        if (!getCheckVehiclesTask().isCancelled())
-            getCheckVehiclesTask().cancel();
+        getCheckVehiclesTask().cancel();
+        if (!dependenciesLoaded)
+            getLogger().severe("§c§lDependencies were not found.");
+    }
+
+    private boolean checkDependencies() {
+        if (!checkPlugin("WLib") || !checkPlugin("ProtocolLib") || !checkPlugin("ModelEngine")) {
+            dependenciesLoaded = false;
+            Bukkit.getPluginManager().disablePlugin(this);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkPlugin(String name) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
+        if (!Bukkit.getPluginManager().isPluginEnabled(plugin)) {
+            getLogger().severe("§c§l" + name + "§c is not installed or not enabled!");
+            return false;
+        }
+        return true;
     }
 
     private void initConfigs() {
