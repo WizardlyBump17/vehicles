@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.wizardlybump17.vehicles.api.config.Messages;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
+import com.wizardlybump17.vehicles.api.model.airplane.MilitaryAirplaneModel;
 import com.wizardlybump17.vehicles.api.model.car.CarModel;
 import com.wizardlybump17.vehicles.api.model.motorcycle.MotorcycleModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
@@ -76,6 +77,7 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ConfigurationSerialization.registerClass(CarModel.class);
         ConfigurationSerialization.registerClass(MotorcycleModel.class);
         ConfigurationSerialization.registerClass(AirplaneModel.class);
+        ConfigurationSerialization.registerClass(MilitaryAirplaneModel.class);
     }
 
     public void reloadModels() {

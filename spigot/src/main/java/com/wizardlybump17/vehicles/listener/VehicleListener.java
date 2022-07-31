@@ -3,6 +3,7 @@ package com.wizardlybump17.vehicles.listener;
 import com.wizardlybump17.vehicles.api.cache.VehicleCache;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
+import com.wizardlybump17.vehicles.api.model.airplane.MilitaryAirplaneModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.GameMode;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -112,5 +114,20 @@ public class VehicleListener implements Listener {
             event.setCancelled(vehicle.onLeftClick(player, event.getHand()));
         else if (event.getAction().name().contains("RIGHT"))
             event.setCancelled(vehicle.onRightClick(player, event.getHand()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onExplode(EntityExplodeEvent event) {
+        String name = MilitaryAirplaneModel.getModelName(event.getEntity());
+        VehicleModel<?> model = modelCache.get(name).orElse(null);
+        if (model == null)
+            return;
+
+        if (!(model instanceof MilitaryAirplaneModel militaryModel))
+            return;
+
+        event.setCancelled(true);
+
+        event.getEntity().getWorld().createExplosion(event.getLocation(), militaryModel.getTntPower(), militaryModel.isSetFire(), militaryModel.isBreakBlocks());
     }
 }

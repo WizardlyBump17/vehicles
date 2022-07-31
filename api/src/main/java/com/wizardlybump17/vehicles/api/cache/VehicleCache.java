@@ -7,7 +7,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VehicleCache extends Cache<Entity, Vehicle<?>, Vehicle<?>> {
 
@@ -28,5 +30,10 @@ public class VehicleCache extends Cache<Entity, Vehicle<?>, Vehicle<?>> {
             if (player.equals(vehicle.getDriver()))
                 return Optional.of(vehicle);
         return Optional.empty();
+    }
+
+    @Override
+    protected @NotNull Map<Entity, Vehicle<?>> getInitialMap() {
+        return new ConcurrentHashMap<>();
     }
 }
