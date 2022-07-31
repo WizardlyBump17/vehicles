@@ -2,6 +2,7 @@ models:
   - ==: car
     name: Car 1
     max-speed: 1
+    smooth-speed: 0.95
     acceleration:
       0.5: 0.02
       1.0: 0.04
@@ -29,6 +30,7 @@ models:
   - ==: motorcycle
     name: Motorcycle 1
     max-speed: 1.5
+    smooth-speed: 0.99
     acceleration:
       0.5: 0.02
       1.0: 0.04
@@ -56,6 +58,7 @@ models:
   - ==: airplane
     name: Airplane 1
     max-speed: 1.5
+    smooth-speed: 0.95
     acceleration:
       0.5: 0.02
       1.0: 0.04
@@ -80,6 +83,7 @@ models:
   - ==: military-airplane
     name: Airplane 2
     max-speed: 1.5
+    smooth-speed: 0.95
     acceleration:
       0.5: 0.02
       1.0: 0.04

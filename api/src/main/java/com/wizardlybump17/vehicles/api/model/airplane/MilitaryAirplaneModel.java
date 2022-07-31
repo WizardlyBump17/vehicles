@@ -41,8 +41,8 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     private boolean breakBlocks;
     private boolean setFire;
 
-    public MilitaryAirplaneModel(Vehicles plugin, String name, double maxSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed, int tntFuseTicks, Vector tntDirection, boolean useDriverRotation, float minTntPitch, float maxTntPitch, long tntDelay, float tntPower, boolean breakBlocks, boolean setFire) {
-        super(plugin, name, maxSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, minFallSpeed);
+    public MilitaryAirplaneModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed, int tntFuseTicks, Vector tntDirection, boolean useDriverRotation, float minTntPitch, float maxTntPitch, long tntDelay, float tntPower, boolean breakBlocks, boolean setFire) {
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, minFallSpeed);
         this.tntFuseTicks = tntFuseTicks;
         this.tntDirection = tntDirection;
         this.useDriverRotation = useDriverRotation;
@@ -107,6 +107,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 Vehicles.getInstance(),
                 (String) args.get("name"),
                 ((Number) args.getOrDefault("max-speed", 0d)).doubleValue(),
+                ((Number) args.getOrDefault("smooth-speed", 0.95)).doubleValue(),
                 (Map<Double, Double>) args.get("acceleration"),
                 (Map<Double, Double>) args.get("damage"),
                 new HashMap<>(),

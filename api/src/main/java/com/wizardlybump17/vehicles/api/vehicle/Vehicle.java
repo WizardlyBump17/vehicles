@@ -5,8 +5,10 @@ import com.ticxo.modelengine.api.model.mount.MountablePart;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
+import com.wizardlybump17.vehicles.api.config.Config;
 import com.wizardlybump17.vehicles.api.controller.EmptyMountController;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
+import com.wizardlybump17.vehicles.util.NumberUtil;
 import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -212,6 +214,16 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
         getEntity().remove();
         getPassengers().forEach(this::removePassenger);
         removeEntity(getDriver());
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public double getSpeed(boolean applyPrecision) {
+        if (applyPrecision)
+            return NumberUtil.precision(speed, Config.numberPrecision);
+        return speed;
     }
 
     public static boolean isVehicle(Entity entity) {

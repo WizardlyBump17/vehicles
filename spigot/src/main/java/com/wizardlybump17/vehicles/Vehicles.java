@@ -81,6 +81,7 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ConfigHolderFactoryRegistry.getInstance().put(com.wizardlybump17.vehicles.api.Vehicles.class, new BukkitConfigHolderFactory(this));
 
         ConfigHandlerRegistry.getInstance().register(Messages.class);
+        ConfigHandlerRegistry.getInstance().register(com.wizardlybump17.vehicles.api.config.Config.class);
     }
 
     private void initVehicles() {

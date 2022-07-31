@@ -33,6 +33,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     private final Vehicles plugin;
     private final String name;
     private double maxSpeed;
+    private double smoothSpeed;
     @NonNull
     private Map<Double, Double> acceleration;
     private Map<Double, Double> damage;
@@ -75,6 +76,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
         return MapUtils.removeNullValues(MapUtils.mapOf(
                 "name", name,
                 "max-speed", maxSpeed,
+                "smooth-speed", smoothSpeed,
                 "acceleration", acceleration,
                 "damage", damage,
                 "break-force", breakForce,

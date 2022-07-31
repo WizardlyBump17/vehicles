@@ -17,6 +17,7 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
 
     private long lastSpeedUpdate;
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
+    private boolean reverse = false;
 
     protected Automobile(M model, String plate, ActiveModel megModel) {
         super(model, plate, megModel);
@@ -44,11 +45,13 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         direction.multiply(zza > 0 ? getSpeed() : -getSpeed() / getModel().getBreakForce(getSpeed()));
 
         entity.setVelocity(direction.setY(-1));
+
+        reverse = zza < 0;
     }
 
     @Override
     public void rotate(Player player, double xxa, double zza) {
-        if (xxa == 0 || zza == 0 || !player.equals(getDriver()))
+        if (xxa == 0 || getSpeed(true) == 0 || !player.equals(getDriver()))
             return;
 
         AutomobileEntity entity = (AutomobileEntity) ((CraftEntity) getEntity()).getHandle();
@@ -81,10 +84,32 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
 
     @Override
     public void onCollide(Entity entity) {
-        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > getModel().getDamageDelay())
+        if (getSpeed(true) == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > getModel().getDamageDelay())
             return;
 
         living.damage(getModel().getDamage(getSpeed()), getEntity());
         damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamageDelay());
+    }
+
+    @Override
+    public void check() {
+        if (getSpeed(true) == 0 || System.currentTimeMillis() - lastSpeedUpdate < getModel().getSpeedTimeout())
+            return;
+
+        Entity entity = getEntity();
+
+        Location location = entity.getLocation();
+        location.setPitch(0);
+        Vector direction;
+        if (reverse)
+            direction = location.getDirection().multiply(-getSpeed() * 0.95 / getModel().getBreakForce(getSpeed()));
+        else
+            direction = location.getDirection().multiply(getSpeed() * 0.95);
+
+        entity.setVelocity(direction.setY(-1));
+
+        setSpeed(getSpeed() * 0.95);
+
+        lastSpeedUpdate = System.currentTimeMillis();
     }
 }

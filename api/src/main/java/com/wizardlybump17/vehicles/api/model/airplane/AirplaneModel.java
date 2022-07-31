@@ -30,8 +30,8 @@ public class AirplaneModel extends VehicleModel<Airplane> {
     private float minPitch;
     private float minFallSpeed;
 
-    public AirplaneModel(Vehicles plugin, String name, double maxSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed) {
-        super(plugin, name, maxSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight);
+    public AirplaneModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed) {
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight);
         this.pitchSpeed = pitchSpeed;
         this.maxPitch = maxPitch;
         this.minPitch = minPitch;
@@ -84,6 +84,7 @@ public class AirplaneModel extends VehicleModel<Airplane> {
                 Vehicles.getInstance(),
                 (String) args.get("name"),
                 ((Number) args.getOrDefault("max-speed", 0d)).doubleValue(),
+                ((Number) args.getOrDefault("smooth-speed", 0.95)).doubleValue(),
                 (Map<Double, Double>) args.get("acceleration"),
                 (Map<Double, Double>) args.get("damage"),
                 new HashMap<>(),
