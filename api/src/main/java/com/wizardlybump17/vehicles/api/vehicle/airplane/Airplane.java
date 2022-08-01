@@ -127,10 +127,13 @@ public class Airplane extends Vehicle<AirplaneModel> {
             flying = true;
             FallSpeedInfo info = getModel().getFallSpeed();
             if (location.getPitch() < info.getPitch()) {
-                location.setPitch(Math.min(location.getPitch() + info.getSmoothPitch(), info.getPitch()));
                 if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
                     setSpeed(Math.min(getSpeed() * info.getSmoothSpeed(), info.getMaxSpeed()));
-                entity.getBukkitEntity().setRotation(location.getYaw(), location.getPitch());
+
+                if (!isKeyPressed((Player) getDriver(), ButtonType.UP)) {
+                    location.setPitch(Math.min(location.getPitch() + info.getSmoothPitch(), info.getPitch()));
+                    entity.getBukkitEntity().setRotation(location.getYaw(), location.getPitch());
+                }
             } else if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
                 setSpeed(Math.min(getSpeed() * info.getSpeed(), info.getMaxSpeed()));
             direction = location.getDirection().multiply(getSpeed());

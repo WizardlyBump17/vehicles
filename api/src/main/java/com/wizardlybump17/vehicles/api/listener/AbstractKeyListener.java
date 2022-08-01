@@ -10,25 +10,15 @@ public abstract class AbstractKeyListener implements KeyListener {
 
     private final Map<Player, Double> xxas = new HashMap<>();
     private final Map<Player, Double> zzas = new HashMap<>();
+    private final Map<Player, Boolean> jumping = new HashMap<>();
+    private final Map<Player, Boolean> shifting = new HashMap<>();
 
     @Override
-    public void handle(Player player, double xxa, double zza) {
+    public void handle(Player player, double xxa, double zza, boolean up, boolean down) {
         handleXxa(player, xxa);
         handleZza(player, zza);
-    }
-
-    @Override
-    public boolean isKeyPressed(Player player, ButtonType button) {
-        Double xxa = xxas.get(player);
-        Double zza = zzas.get(player);
-
-        return switch (button) {
-            case FORWARD -> zza != null && zza > 0;
-            case BACKWARD -> zza != null && zza < 0;
-            case ROTATE_LEFT -> xxa != null && xxa > 0;
-            case ROTATE_RIGHT -> xxa != null && xxa < 0;
-            default -> false;
-        };
+        handleJump(player, up);
+        handleShift(player, down);
     }
 
     private void handleXxa(Player player, double xxa) {
@@ -83,5 +73,62 @@ public abstract class AbstractKeyListener implements KeyListener {
             onKeyPressed(player, ButtonType.FORWARD);
         else if (zza < 0)
             onKeyPressed(player, ButtonType.BACKWARD);
+    }
+
+    private void handleJump(Player player, boolean jump) {
+        if (!jumping.containsKey(player) && !jump)
+            return;
+
+        boolean old = jumping.computeIfAbsent(player, p -> {
+            if (jump)
+                onKeyPressed(player, ButtonType.UP);
+            return jump;
+        });
+        jumping.put(player, jump);
+
+        if (old == jump)
+            return;
+
+        if (old)
+            onKeyReleased(player, ButtonType.UP);
+
+        if (jump)
+            onKeyPressed(player, ButtonType.UP);
+    }
+
+    private void handleShift(Player player, boolean shift) {
+        if (!shifting.containsKey(player) && !shift)
+            return;
+
+        boolean old = shifting.computeIfAbsent(player, p -> {
+            if (shift)
+                onKeyPressed(player, ButtonType.DOWN);
+            return shift;
+        });
+        shifting.put(player, shift);
+
+        if (old == shift)
+            return;
+
+        if (old)
+            onKeyReleased(player, ButtonType.DOWN);
+
+        if (shift)
+            onKeyPressed(player, ButtonType.DOWN);
+    }
+
+    @Override
+    public boolean isKeyPressed(Player player, ButtonType button) {
+        double xxa = xxas.getOrDefault(player, 0d);
+        double zza = zzas.getOrDefault(player, 0d);
+
+        return switch (button) {
+            case FORWARD -> zza > 0;
+            case BACKWARD -> zza < 0;
+            case ROTATE_LEFT -> xxa > 0;
+            case ROTATE_RIGHT -> xxa < 0;
+            case UP -> jumping.getOrDefault(player, false);
+            case DOWN -> shifting.getOrDefault(player, false);
+        };
     }
 }

@@ -34,7 +34,7 @@ public class PacketListener extends PacketAdapter {
 
         Bukkit.getScheduler().runTask(plugin, () -> { //we receive the packets async
             for (KeyListener listener : vehicle.getKeyListeners())
-                listener.handle(player, packet.b(), packet.c());
+                listener.handle(player, packet.b(), packet.c(), packet.d(), packet.e());
 
             vehicle.move(player, packet.b(), packet.c());
             vehicle.rotate(player, packet.b(), packet.c());

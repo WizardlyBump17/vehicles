@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public interface KeyListener {
 
-    void handle(Player player, double xxa, double zza);
+    void handle(Player player, double xxa, double zza, boolean up, boolean down);
 
     void onKeyPressed(Player player, ButtonType button);
 
