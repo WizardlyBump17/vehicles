@@ -187,6 +187,7 @@ public class AirplaneEntity extends EntityCow {
         boolean flag1 = vec3d.c != vec3d1.c;
         boolean flag2 = vec3d.d != vec3d1.d;
         boolean flag3 = this.z || flag1 && vec3d.c < 0.0;
+
         if (this.O > 0.0F && flag3 && (flag || flag2)) {
             Vec3D vec3d2 = a(this, new Vec3D(vec3d.b, this.O, vec3d.d), axisalignedbb, this.t, voxelshapecollision, streamaccumulator);
             Vec3D vec3d3 = a(this, new Vec3D(0.0, this.O, 0.0), axisalignedbb.b(vec3d.b, 0.0, vec3d.d), this.t, voxelshapecollision, streamaccumulator);
@@ -196,8 +197,22 @@ public class AirplaneEntity extends EntityCow {
                     vec3d2 = vec3d4;
             }
 
-            if (vec3d2.i() > vec3d1.i())
+            if (vec3d2.i() > vec3d1.i()) {
+                handle.onBlockCollide();
                 return vec3d2.e(a(this, new Vec3D(0.0, -vec3d2.c + vec3d.c, 0.0), axisalignedbb.c(vec3d2), this.t, voxelshapecollision, streamaccumulator));
+            }
+        }
+
+        if (flag3 && (flag || flag2)) {
+            double e = this.getBoundingBox().e;
+            Vec3D vec3d2 = a(this, new Vec3D(vec3d.b, e, vec3d.d), axisalignedbb, this.t, voxelshapecollision, streamaccumulator);
+            Vec3D vec3d3 = a(this, new Vec3D(0.0, e, 0.0), axisalignedbb.b(vec3d.b, 0.0, vec3d.d), this.t, voxelshapecollision, streamaccumulator);
+            Vec3D vec3d4 = a(this, new Vec3D(vec3d.b, 0.0, vec3d.d), axisalignedbb.c(vec3d3), this.t, voxelshapecollision, streamaccumulator).e(vec3d3);
+            if (vec3d4.i() > vec3d2.i())
+                vec3d2 = vec3d4;
+
+            if (vec3d2.g() > vec3d1.g())
+                handle.onBlockCollide();
         }
 
         return vec3d1;

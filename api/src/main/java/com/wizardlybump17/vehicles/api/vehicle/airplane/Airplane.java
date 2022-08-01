@@ -142,4 +142,13 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
         lastSpeedUpdate = System.currentTimeMillis();
     }
+
+    @Override
+    public void onBlockCollide() {
+        if (getEntity().getFallDistance() != 0)
+            return;
+
+        setSpeed(0);
+        lastSpeedUpdate = System.currentTimeMillis();
+    }
 }

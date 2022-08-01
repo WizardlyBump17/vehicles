@@ -58,6 +58,12 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     public abstract void onCollide(Entity entity);
 
     /**
+     * Called when the vehicle collides with a block AND can jump.
+     */
+    public void onBlockCollide() {
+    }
+
+    /**
      * Called when the player do a left click while inside the vehicle.
      * @param player the player who clicked
      * @param hand the used hand
