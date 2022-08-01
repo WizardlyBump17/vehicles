@@ -1,8 +1,10 @@
 package com.wizardlybump17.vehicles.api.vehicle;
 
 import com.ticxo.modelengine.api.model.ActiveModel;
+import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
@@ -32,12 +34,9 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         if (entity.getFallDistance() != 0)
             return;
 
-        if (System.currentTimeMillis() - lastSpeedUpdate > getModel().getSpeedTimeout())
-            setSpeed(0);
-
         lastSpeedUpdate = System.currentTimeMillis();
 
-        setSpeed(Math.min(getModel().getMaxSpeed(), getSpeed() + getModel().getAcceleration(getSpeed())));
+        setSpeed(Math.min(getModel().getSpeed().getMax(), getSpeed() + getModel().getAcceleration(getSpeed())));
 
         Location location = entity.getLocation();
         location.setPitch(0);
@@ -93,8 +92,10 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
 
     @Override
     public void check() {
-        if (getSpeed(true) == 0 || System.currentTimeMillis() - lastSpeedUpdate < getModel().getSpeedTimeout())
+        if (getSpeed(true) == 0 || isKeyPressed((Player) getDriver(), ButtonType.FORWARD))
             return;
+
+        SpeedInfo speed = getModel().getSpeed();
 
         Entity entity = getEntity();
 
@@ -102,13 +103,13 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         location.setPitch(0);
         Vector direction;
         if (reverse)
-            direction = location.getDirection().multiply(-getSpeed() * getModel().getSmoothSpeed() / getModel().getBreakForce(getSpeed()));
+            direction = location.getDirection().multiply(-getSpeed() * speed.getSmooth() / getModel().getBreakForce(getSpeed()));
         else
-            direction = location.getDirection().multiply(getSpeed() * getModel().getSmoothSpeed());
+            direction = location.getDirection().multiply(getSpeed() * speed.getSmooth());
 
         entity.setVelocity(direction.setY(-1));
 
-        setSpeed(getSpeed() * getModel().getSmoothSpeed());
+        setSpeed(getSpeed() * speed.getSmooth());
 
         lastSpeedUpdate = System.currentTimeMillis();
     }

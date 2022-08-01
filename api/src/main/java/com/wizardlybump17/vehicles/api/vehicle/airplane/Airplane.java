@@ -4,6 +4,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import org.bukkit.Location;
@@ -35,15 +36,18 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
         Vector direction = getEntity().getLocation().getDirection();
 
-        if (zza > 0 && getSpeed() > getModel().getMaxSpeed()) {
+        SpeedInfo speedInfo = getModel().getSpeed();
+
+        if (zza > 0 && getSpeed() > speedInfo.getMax()) {
             applyVelocity(direction);
             return;
         }
 
-        if (zza < 0)
-            setSpeed(getSpeed() / getModel().getBreakForce(getSpeed()));
-        else
-            setSpeed(Math.min(getSpeed() + getModel().getAcceleration(getSpeed()), getModel().getMaxSpeed()));
+        if (zza < 0) {
+            double speed = getSpeed() / getModel().getBreakForce(getSpeed());
+            setSpeed(flying ? speed : speed);
+        } else
+            setSpeed(Math.min(getSpeed() + getModel().getAcceleration(getSpeed()), speedInfo.getMax()));
 
         applyVelocity(direction);
     }
@@ -139,7 +143,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
             direction = location.getDirection().multiply(getSpeed());
         } else {
             flying = false;
-            setSpeed(getSpeed() * getModel().getSmoothSpeed());
+            setSpeed(getSpeed() * getModel().getSpeed().getSmooth());
             direction = location.getDirection().multiply(getSpeed()).setY(-1);
             entity.getBukkitEntity().setRotation(location.getYaw(), 0);
         }

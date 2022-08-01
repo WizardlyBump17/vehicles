@@ -3,6 +3,7 @@ package com.wizardlybump17.vehicles.api.model;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.Vehicles;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.vehicles.util.MapUtil;
 import com.wizardlybump17.wlib.item.ItemBuilder;
@@ -32,22 +33,18 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
 
     private final Vehicles plugin;
     private final String name;
-    private double maxSpeed;
-    private double smoothSpeed;
+    private final SpeedInfo speed;
     @NonNull
-    private Map<Double, Double> acceleration;
     private Map<Double, Double> damage;
-    @NonNull
-    private Map<Double, Double> breakForce;
+    private long damageDelay;
     @NonNull
     private String megModel;
     private float rotationSpeed;
     private float jumpHeight;
-    private long speedTimeout;
     private int floatingPrecision;
 
     public double getAcceleration(double speed) {
-        return MapUtil.getValue(acceleration, speed);
+        return MapUtil.getValue(this.speed.getAcceleration(), speed);
     }
 
     public double getDamage(double speed) {
@@ -55,7 +52,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     }
 
     public double getBreakForce(double speed) {
-        return MapUtil.getValue(breakForce, speed);
+        return MapUtil.getValue(this.speed.getBreakForce(), speed);
     }
 
     public abstract V createVehicle(Location location, String plate);
@@ -77,15 +74,10 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     public Map<String, Object> serialize() {
         return MapUtils.removeNullValues(MapUtils.mapOf(
                 "name", name,
-                "max-speed", maxSpeed,
-                "smooth-speed", smoothSpeed,
-                "acceleration", acceleration,
                 "damage", damage,
-                "break-force", breakForce,
                 "meg-model", megModel,
                 "rotation-speed", rotationSpeed,
                 "jump-height", jumpHeight,
-                "speed-timeout", speedTimeout,
                 "floating-precision", floatingPrecision
         ));
     }

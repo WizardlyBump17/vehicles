@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.airplane.MilitaryAirplane;
@@ -40,11 +41,9 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     public MilitaryAirplaneModel(
             Vehicles plugin,
             String name,
-            double maxSpeed,
-            double smoothSpeed,
-            @NonNull Map<Double, Double> acceleration,
+            SpeedInfo speed,
             Map<Double, Double> damage,
-            @NonNull Map<Double, Double> breakForce,
+            long damageDelay,
             @NonNull String megModel,
             float rotationSpeed,
             float jumpHeight,
@@ -53,9 +52,8 @@ public class MilitaryAirplaneModel extends AirplaneModel {
             float pitchSpeed,
             @NonNull TNTInfo tntInfo,
             @NonNull FallSpeedInfo fallSpeed,
-            long speedTimeout,
             int floatingPrecision) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, fallSpeed, speedTimeout, floatingPrecision);
+        super(plugin, name, speed, damage, damageDelay, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, fallSpeed, floatingPrecision);
         this.tntInfo = tntInfo;
         this.fallSpeed = fallSpeed;
     }
@@ -101,11 +99,9 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         return new MilitaryAirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
-                ((Number) args.getOrDefault("max-speed", 0d)).doubleValue(),
-                ((Number) args.getOrDefault("smooth-speed", 0.95)).doubleValue(),
-                (Map<Double, Double>) args.get("acceleration"),
+                (SpeedInfo) args.getOrDefault("speed", SpeedInfo.defaultInfo()),
                 (Map<Double, Double>) args.get("damage"),
-                (Map<Double, Double>) args.get("break-force"),
+                ((Number) args.getOrDefault("damage-delay", 0L)).longValue(),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0f)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
@@ -114,7 +110,6 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
                 (TNTInfo) args.getOrDefault("tnt", TNTInfo.defaultInfo()),
                 (FallSpeedInfo) args.getOrDefault("fall-speed", FallSpeedInfo.defaultInfo()),
-                ((Number) args.getOrDefault("speed-timeout", 0L)).longValue(),
                 (int) args.getOrDefault("floating-precision", 2)
         );
     }

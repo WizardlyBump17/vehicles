@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.airplane.Airplane;
 import lombok.Getter;
@@ -35,11 +36,9 @@ public class AirplaneModel extends VehicleModel<Airplane> {
     public AirplaneModel(
             Vehicles plugin,
             String name,
-            double maxSpeed,
-            double smoothSpeed,
-            @NonNull Map<Double, Double> acceleration,
+            SpeedInfo speed,
             Map<Double, Double> damage,
-            @NonNull Map<Double, Double> breakForce,
+            long damageDelay,
             @NonNull String megModel,
             float rotationSpeed,
             float jumpHeight,
@@ -47,9 +46,8 @@ public class AirplaneModel extends VehicleModel<Airplane> {
             float maxPitch,
             float pitchSpeed,
             @NonNull FallSpeedInfo fallSpeed,
-            long speedTimeout,
             int floatingPrecision) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, speedTimeout, floatingPrecision);
+        super(plugin, name, speed, damage, damageDelay, megModel, rotationSpeed, jumpHeight, floatingPrecision);
         this.pitchSpeed = pitchSpeed;
         this.maxPitch = maxPitch;
         this.minPitch = minPitch;
@@ -102,11 +100,9 @@ public class AirplaneModel extends VehicleModel<Airplane> {
         return new AirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
-                ((Number) args.getOrDefault("max-speed", 0d)).doubleValue(),
-                ((Number) args.getOrDefault("smooth-speed", 0.95)).doubleValue(),
-                (Map<Double, Double>) args.get("acceleration"),
+                (SpeedInfo) args.getOrDefault("speed", SpeedInfo.defaultInfo()),
                 (Map<Double, Double>) args.get("damage"),
-                (Map<Double, Double>) args.get("break-force"),
+                ((Number) args.getOrDefault("damage-delay", 0L)).longValue(),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0f)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
@@ -114,7 +110,6 @@ public class AirplaneModel extends VehicleModel<Airplane> {
                 ((Number) pitch.getOrDefault("max", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
                 (FallSpeedInfo) args.getOrDefault("fall-speed", FallSpeedInfo.defaultInfo()),
-                ((Number) args.getOrDefault("speed-timeout", 0L)).longValue(),
                 (int) args.getOrDefault("floating-precision", 2)
         );
     }

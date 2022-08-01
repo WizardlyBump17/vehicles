@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.motorcycle.Motorcycle;
 import lombok.NonNull;
 import org.bukkit.Location;
@@ -22,18 +23,14 @@ public class MotorcycleModel extends AutomobileModel<Motorcycle> {
     public MotorcycleModel(
             Vehicles plugin,
             String name,
-            double maxSpeed,
-            double smoothSpeed,
-            @NonNull Map<Double, Double> acceleration,
+            SpeedInfo speed,
             Map<Double, Double> damage,
-            @NonNull Map<Double, Double> breakForce,
+            long damageDelay,
             @NonNull String megModel,
             float rotationSpeed,
             float jumpHeight,
-            long speedTimeout,
-            long damageDelay,
             int floatingPrecision) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, speedTimeout, damageDelay, floatingPrecision);
+        super(plugin, name, speed, damage, damageDelay, megModel, rotationSpeed, jumpHeight, floatingPrecision);
     }
 
     @Override
@@ -69,16 +66,12 @@ public class MotorcycleModel extends AutomobileModel<Motorcycle> {
         return new MotorcycleModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
-                ((Number) args.getOrDefault("max-speed", 0)).doubleValue(),
-                ((Number) args.getOrDefault("smooth-speed", 0.95)).doubleValue(),
-                (Map<Double, Double>) args.get("acceleration"),
+                (SpeedInfo) args.getOrDefault("speed", SpeedInfo.defaultInfo()),
                 (Map<Double, Double>) args.get("damage"),
-                (Map<Double, Double>) args.get("break-force"),
+                ((Number) args.getOrDefault("damage-delay", 0)).longValue(),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
-                ((Number) args.getOrDefault("speed-timeout", 0)).longValue(),
-                ((Number) args.getOrDefault("damage-delay", 0)).longValue(),
                 (int) args.getOrDefault("floating-precision", 2)
         );
     }
