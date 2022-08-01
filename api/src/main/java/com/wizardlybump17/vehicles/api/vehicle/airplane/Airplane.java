@@ -36,9 +36,6 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
         Entity entity = getEntity();
 
-        if (System.currentTimeMillis() - lastSpeedUpdate > SPEED_TIMEOUT)
-            setSpeed(0);
-
         lastSpeedUpdate = System.currentTimeMillis();
 
         setSpeed(Math.min(getModel().getMaxSpeed(), getSpeed() + getModel().getAcceleration(getSpeed())));
@@ -55,7 +52,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void rotate(Player player, double xxa, double zza) {
-        if (xxa == 0 || zza <= 0 || !player.equals(getDriver()))
+        if (getSpeed(true) == 0 || xxa == 0 || !player.equals(getDriver()))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
@@ -67,7 +64,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void jump(Player player, double xxa, double zza) {
-        if (zza <= 0 || !player.equals(getDriver()))
+        if (getSpeed(true) == 0 || !player.equals(getDriver()))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
@@ -86,7 +83,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void shift(Player player, double xxa, double zza) {
-        if (zza <= 0 || !player.equals(getDriver()))
+        if (getSpeed(true) == 0 || !player.equals(getDriver()))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
@@ -123,22 +120,26 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void check() {
-        if (System.currentTimeMillis() - lastSpeedUpdate > SPEED_TIMEOUT)
-            setSpeed(0);
-
-        if (getSpeed() > getModel().getMinFallSpeed())
+        if (getSpeed(true) == 0 || System.currentTimeMillis() - lastSpeedUpdate < getModel().getSpeedTimeout())
             return;
-
-        setSpeed(getModel().getMaxSpeed());
-        lastSpeedUpdate = System.currentTimeMillis();
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
         Location location = entity.getBukkitEntity().getLocation();
-        location.setPitch(getModel().getMaxPitch());
+        Vector direction;
 
-        Vector vector = location.getDirection().multiply(getModel().getMaxSpeed());
+        if (location.getBlock().getRelative(BlockFace.DOWN).isPassable()) {
+            setSpeed(getSpeed() * getModel().getFallSpeed());
+            location.setPitch(getModel().getFallPitch());
+            direction = location.getDirection().multiply(getSpeed());
+            entity.getBukkitEntity().setRotation(location.getYaw(), getModel().getFallPitch());
+        } else {
+            setSpeed(getSpeed() * getModel().getSmoothSpeed());
+            direction = location.getDirection().multiply(getSpeed()).setY(-1);
+            entity.getBukkitEntity().setRotation(location.getYaw(), 0);
+        }
 
-        if (location.getBlock().getRelative(BlockFace.DOWN).isPassable())
-            entity.getBukkitEntity().setVelocity(vector);
+        entity.getBukkitEntity().setVelocity(direction);
+
+        lastSpeedUpdate = System.currentTimeMillis();
     }
 }

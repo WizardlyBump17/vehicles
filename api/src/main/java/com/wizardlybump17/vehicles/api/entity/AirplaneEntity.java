@@ -41,7 +41,6 @@ public class AirplaneEntity extends EntityCow {
         handle = vehicle;
 
         O = handle.getModel().getJumpHeight();
-        setNoGravity(true);
     }
 
     @Override

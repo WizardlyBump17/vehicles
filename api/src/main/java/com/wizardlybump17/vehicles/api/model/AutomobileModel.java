@@ -12,12 +12,10 @@ import java.util.Map;
 @Setter
 public abstract class AutomobileModel<A extends Automobile<?>> extends VehicleModel<A> {
 
-    private long speedTimeout;
     private long damageDelay;
 
     protected AutomobileModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, long speedTimeout, long damageDelay) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight);
-        this.speedTimeout = speedTimeout;
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, speedTimeout);
         this.damageDelay = damageDelay;
     }
 }

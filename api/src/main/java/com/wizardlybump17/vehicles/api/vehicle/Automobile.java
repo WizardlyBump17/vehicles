@@ -102,13 +102,13 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         location.setPitch(0);
         Vector direction;
         if (reverse)
-            direction = location.getDirection().multiply(-getSpeed() * 0.95 / getModel().getBreakForce(getSpeed()));
+            direction = location.getDirection().multiply(-getSpeed() * getModel().getSmoothSpeed() / getModel().getBreakForce(getSpeed()));
         else
-            direction = location.getDirection().multiply(getSpeed() * 0.95);
+            direction = location.getDirection().multiply(getSpeed() * getModel().getSmoothSpeed());
 
         entity.setVelocity(direction.setY(-1));
 
-        setSpeed(getSpeed() * 0.95);
+        setSpeed(getSpeed() * getModel().getSmoothSpeed());
 
         lastSpeedUpdate = System.currentTimeMillis();
     }

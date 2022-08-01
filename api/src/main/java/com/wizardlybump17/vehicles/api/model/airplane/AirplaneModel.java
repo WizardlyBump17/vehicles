@@ -29,13 +29,17 @@ public class AirplaneModel extends VehicleModel<Airplane> {
     private float maxPitch;
     private float minPitch;
     private float minFallSpeed;
+    private float fallSpeed;
+    private float fallPitch;
 
-    public AirplaneModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight);
+    public AirplaneModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed, float fallSpeed, float fallPitch, long speedTimeout) {
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, speedTimeout);
         this.pitchSpeed = pitchSpeed;
         this.maxPitch = maxPitch;
         this.minPitch = minPitch;
         this.minFallSpeed = minFallSpeed;
+        this.fallSpeed = fallSpeed;
+        this.fallPitch = fallPitch;
     }
 
     @Override
@@ -74,12 +78,18 @@ public class AirplaneModel extends VehicleModel<Airplane> {
                 "max", maxPitch,
                 "min", minPitch
         ));
+        map.put("fall", Map.of(
+                "min-speed", minFallSpeed,
+                "speed", fallSpeed,
+                "pitch", fallPitch
+        ));
         return map;
     }
 
     @SuppressWarnings("unchecked")
     public static AirplaneModel deserialize(Map<String, Object> args) {
         Map<String, Object> pitch = (Map<String, Object>) args.get("pitch");
+        Map<String, Object> fall = (Map<String, Object>) args.get("fall");
         return new AirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
@@ -94,7 +104,10 @@ public class AirplaneModel extends VehicleModel<Airplane> {
                 ((Number) pitch.getOrDefault("min", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("max", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
-                ((Number) args.getOrDefault("min-fall-speed", 0f)).floatValue()
+                ((Number) fall.getOrDefault("min-speed", 0f)).floatValue(),
+                ((Number) fall.getOrDefault("speed", 1f)).floatValue(),
+                ((Number) fall.getOrDefault("pitch", 0f)).floatValue(),
+                ((Number) args.getOrDefault("speed-timeout", 0L)).longValue()
         );
     }
 }

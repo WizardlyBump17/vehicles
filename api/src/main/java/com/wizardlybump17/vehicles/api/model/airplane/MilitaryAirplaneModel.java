@@ -41,8 +41,34 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     private boolean breakBlocks;
     private boolean setFire;
 
-    public MilitaryAirplaneModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, float minPitch, float maxPitch, float pitchSpeed, float minFallSpeed, int tntFuseTicks, Vector tntDirection, boolean useDriverRotation, float minTntPitch, float maxTntPitch, long tntDelay, float tntPower, boolean breakBlocks, boolean setFire) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, minFallSpeed);
+    public MilitaryAirplaneModel(
+            Vehicles plugin,
+            String name,
+            double maxSpeed,
+            double smoothSpeed,
+            @NonNull Map<Double, Double> acceleration,
+            Map<Double, Double> damage,
+            @NonNull Map<Double, Double> breakForce,
+            @NonNull String megModel,
+            float rotationSpeed,
+            float jumpHeight,
+            float minPitch,
+            float maxPitch,
+            float pitchSpeed,
+            float minFallSpeed,
+            float fallSpeed,
+            float fallPitch,
+            int tntFuseTicks,
+            Vector tntDirection,
+            boolean useDriverRotation,
+            float minTntPitch,
+            float maxTntPitch,
+            long tntDelay,
+            float tntPower,
+            boolean breakBlocks,
+            boolean setFire,
+            long speedTimeout) {
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, minFallSpeed, fallSpeed, fallPitch, speedTimeout);
         this.tntFuseTicks = tntFuseTicks;
         this.tntDirection = tntDirection;
         this.useDriverRotation = useDriverRotation;
@@ -103,6 +129,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     public static MilitaryAirplaneModel deserialize(Map<String, Object> args) {
         Map<String, Object> pitch = (Map<String, Object>) args.get("pitch");
         Map<String, Object> tnt = (Map<String, Object>) args.get("tnt");
+        Map<String, Object> fall = (Map<String, Object>) args.get("fall");
         return new MilitaryAirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
@@ -117,7 +144,9 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 ((Number) pitch.getOrDefault("min", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("max", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
-                ((Number) args.getOrDefault("min-fall-speed", 0f)).floatValue(),
+                ((Number) fall.getOrDefault("min-speed", 0f)).floatValue(),
+                ((Number) fall.getOrDefault("speed", 1f)).floatValue(),
+                ((Number) fall.getOrDefault("pitch", 0f)).floatValue(),
                 (int) tnt.getOrDefault("fuse-ticks", 0),
                 (Vector) tnt.getOrDefault("direction", new Vector(0, 0, 0)),
                 (boolean) tnt.getOrDefault("use-driver-rotation", false),
@@ -126,7 +155,8 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 ((Number) tnt.getOrDefault("delay", 0L)).longValue(),
                 ((Number) tnt.getOrDefault("power", 0d)).floatValue(),
                 (boolean) tnt.getOrDefault("break-blocks", false),
-                (boolean) tnt.getOrDefault("set-fire", false)
+                (boolean) tnt.getOrDefault("set-fire", false),
+                ((Number) args.getOrDefault("speed-timeout", 0L)).longValue()
         );
     }
 
