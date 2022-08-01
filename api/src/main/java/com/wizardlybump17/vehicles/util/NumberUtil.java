@@ -12,4 +12,8 @@ public class NumberUtil {
     public static double precision(double d, int decimals) {
         return Math.round(d * Math.pow(10, decimals)) / Math.pow(10, decimals);
     }
+
+    public static boolean between(double n, double min, double max) {
+        return n >= min && n <= max;
+    }
 }

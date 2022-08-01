@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.wizardlybump17.vehicles.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleCache;
+import com.wizardlybump17.vehicles.api.listener.KeyListener;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import net.minecraft.network.protocol.game.PacketPlayInSteerVehicle;
 import org.bukkit.Bukkit;
@@ -32,6 +33,9 @@ public class PacketListener extends PacketAdapter {
         PacketPlayInSteerVehicle packet = (PacketPlayInSteerVehicle) event.getPacket().getHandle();
 
         Bukkit.getScheduler().runTask(plugin, () -> { //we receive the packets async
+            for (KeyListener listener : vehicle.getKeyListeners())
+                listener.handle(player, packet.b(), packet.c());
+
             vehicle.move(player, packet.b(), packet.c());
             vehicle.rotate(player, packet.b(), packet.c());
             if (packet.d())

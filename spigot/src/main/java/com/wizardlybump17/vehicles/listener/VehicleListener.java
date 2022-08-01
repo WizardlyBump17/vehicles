@@ -3,7 +3,8 @@ package com.wizardlybump17.vehicles.listener;
 import com.wizardlybump17.vehicles.api.cache.VehicleCache;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
-import com.wizardlybump17.vehicles.api.model.airplane.MilitaryAirplaneModel;
+import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
+import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.GameMode;
@@ -128,6 +129,7 @@ public class VehicleListener implements Listener {
 
         event.setCancelled(true);
 
-        event.getEntity().getWorld().createExplosion(event.getLocation(), militaryModel.getTntPower(), militaryModel.isSetFire(), militaryModel.isBreakBlocks());
+        TNTInfo info = militaryModel.getTntInfo();
+        event.getEntity().getWorld().createExplosion(event.getLocation(), info.getPower(), info.isSetFire(), info.isBreakBlocks());
     }
 }

@@ -1,4 +1,4 @@
-package com.wizardlybump17.vehicles.api.model.airplane;
+package com.wizardlybump17.vehicles.api.model.airplane.military;
 
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
@@ -6,6 +6,9 @@ import com.ticxo.modelengine.api.model.ModeledEntity;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
+import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
+import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
+import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.airplane.MilitaryAirplane;
 import lombok.Getter;
 import lombok.NonNull;
@@ -18,10 +21,8 @@ import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @SerializableAs("military-airplane")
@@ -31,15 +32,10 @@ public class MilitaryAirplaneModel extends AirplaneModel {
 
     public static final NamespacedKey TNT_KEY = new NamespacedKey(Vehicles.getInstance(), "tnt");
 
-    private int tntFuseTicks;
-    private Vector tntDirection;
-    private boolean useDriverRotation;
-    private float maxTntPitch;
-    private float minTntPitch;
-    private long tntDelay;
-    private float tntPower;
-    private boolean breakBlocks;
-    private boolean setFire;
+    @NonNull
+    private final TNTInfo tntInfo;
+    @NonNull
+    private final FallSpeedInfo fallSpeed;
 
     public MilitaryAirplaneModel(
             Vehicles plugin,
@@ -55,29 +51,13 @@ public class MilitaryAirplaneModel extends AirplaneModel {
             float minPitch,
             float maxPitch,
             float pitchSpeed,
-            float minFallSpeed,
-            float fallSpeed,
-            float fallPitch,
-            int tntFuseTicks,
-            Vector tntDirection,
-            boolean useDriverRotation,
-            float minTntPitch,
-            float maxTntPitch,
-            long tntDelay,
-            float tntPower,
-            boolean breakBlocks,
-            boolean setFire,
-            long speedTimeout) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, minFallSpeed, fallSpeed, fallPitch, speedTimeout);
-        this.tntFuseTicks = tntFuseTicks;
-        this.tntDirection = tntDirection;
-        this.useDriverRotation = useDriverRotation;
-        this.maxTntPitch = maxTntPitch;
-        this.minTntPitch = minTntPitch;
-        this.tntDelay = tntDelay;
-        this.tntPower = tntPower;
-        this.breakBlocks = breakBlocks;
-        this.setFire = setFire;
+            @NonNull TNTInfo tntInfo,
+            @NonNull FallSpeedInfo fallSpeed,
+            long speedTimeout,
+            int floatingPrecision) {
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, fallSpeed, speedTimeout, floatingPrecision);
+        this.tntInfo = tntInfo;
+        this.fallSpeed = fallSpeed;
     }
 
     @Override
@@ -111,25 +91,13 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     @Override
     public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = super.serialize();
-        map.put("tnt", Map.of(
-                "fuse-ticks", tntFuseTicks,
-                "direction", tntDirection,
-                "use-driver-rotation", useDriverRotation,
-                "max-pitch", maxTntPitch,
-                "min-pitch", minTntPitch,
-                "delay", tntDelay,
-                "power", tntPower,
-                "break-blocks", breakBlocks,
-                "set-fire", setFire
-        ));
+        map.put("tnt", tntInfo);
         return map;
     }
 
     @SuppressWarnings("unchecked")
     public static MilitaryAirplaneModel deserialize(Map<String, Object> args) {
         Map<String, Object> pitch = (Map<String, Object>) args.get("pitch");
-        Map<String, Object> tnt = (Map<String, Object>) args.get("tnt");
-        Map<String, Object> fall = (Map<String, Object>) args.get("fall");
         return new MilitaryAirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
@@ -137,34 +105,25 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 ((Number) args.getOrDefault("smooth-speed", 0.95)).doubleValue(),
                 (Map<Double, Double>) args.get("acceleration"),
                 (Map<Double, Double>) args.get("damage"),
-                new HashMap<>(),
+                (Map<Double, Double>) args.get("break-force"),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0f)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
                 ((Number) pitch.getOrDefault("min", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("max", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
-                ((Number) fall.getOrDefault("min-speed", 0f)).floatValue(),
-                ((Number) fall.getOrDefault("speed", 1f)).floatValue(),
-                ((Number) fall.getOrDefault("pitch", 0f)).floatValue(),
-                (int) tnt.getOrDefault("fuse-ticks", 0),
-                (Vector) tnt.getOrDefault("direction", new Vector(0, 0, 0)),
-                (boolean) tnt.getOrDefault("use-driver-rotation", false),
-                ((Number) tnt.getOrDefault("min-pitch", 0f)).floatValue(),
-                ((Number) tnt.getOrDefault("max-pitch", 0f)).floatValue(),
-                ((Number) tnt.getOrDefault("delay", 0L)).longValue(),
-                ((Number) tnt.getOrDefault("power", 0d)).floatValue(),
-                (boolean) tnt.getOrDefault("break-blocks", false),
-                (boolean) tnt.getOrDefault("set-fire", false),
-                ((Number) args.getOrDefault("speed-timeout", 0L)).longValue()
+                (TNTInfo) args.getOrDefault("tnt", TNTInfo.defaultInfo()),
+                (FallSpeedInfo) args.getOrDefault("fall-speed", FallSpeedInfo.defaultInfo()),
+                ((Number) args.getOrDefault("speed-timeout", 0L)).longValue(),
+                (int) args.getOrDefault("floating-precision", 2)
         );
     }
 
     public TNTPrimed createTNT(Location location) {
         return location.getWorld().spawn(location, TNTPrimed.class, tnt -> {
-            tnt.setFuseTicks(tntFuseTicks);
+            tnt.setFuseTicks(tntInfo.getFuseTicks());
             tnt.getPersistentDataContainer().set(TNT_KEY, PersistentDataType.STRING, getName());
-            tnt.setVelocity(location.getDirection().multiply(tntDirection));
+            tnt.setVelocity(location.getDirection().multiply(tntInfo.getDirection()));
         });
     }
 

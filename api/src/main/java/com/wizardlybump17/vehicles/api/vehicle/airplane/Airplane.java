@@ -1,8 +1,10 @@
 package com.wizardlybump17.vehicles.api.vehicle.airplane;
 
 import com.ticxo.modelengine.api.model.ActiveModel;
+import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
+import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -17,13 +19,10 @@ import java.util.Map;
 
 public class Airplane extends Vehicle<AirplaneModel> {
 
-    public static final long SPEED_TIMEOUT = 100;
-    public static final long PITCH_TIMEOUT = 100;
     public static final long DAMAGE_DELAY = 1000;
 
-    private long lastSpeedUpdate;
-    private long lastPitchUpdate;
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
+    private boolean flying;
 
     public Airplane(AirplaneModel model, String plate, ActiveModel megModel) {
         super(model, plate, megModel);
@@ -31,23 +30,28 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void move(Player player, double xxa, double zza) {
-        if (zza <= 0 || !player.equals(getDriver()))
+        if (zza == 0 || !player.equals(getDriver()))
             return;
 
+        Vector direction = getEntity().getLocation().getDirection();
+
+        if (zza > 0 && getSpeed() > getModel().getMaxSpeed()) {
+            applyVelocity(direction);
+            return;
+        }
+
+        if (zza < 0)
+            setSpeed(getSpeed() / getModel().getBreakForce(getSpeed()));
+        else
+            setSpeed(Math.min(getSpeed() + getModel().getAcceleration(getSpeed()), getModel().getMaxSpeed()));
+
+        applyVelocity(direction);
+    }
+
+    private void applyVelocity(Vector vector) {
         Entity entity = getEntity();
-
-        lastSpeedUpdate = System.currentTimeMillis();
-
-        setSpeed(Math.min(getModel().getMaxSpeed(), getSpeed() + getModel().getAcceleration(getSpeed())));
-
-        Location location = entity.getLocation();
-        if (System.currentTimeMillis() - lastPitchUpdate > PITCH_TIMEOUT)
-            location.setPitch(0);
-
-        Vector direction = location.getDirection();
-        direction.multiply(getSpeed());
-
-        entity.setVelocity(direction);
+        vector.multiply(getSpeed());
+        entity.setVelocity(vector);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
         float yaw = entity.getBukkitYaw();
         yaw += xxa > 0 ? -getModel().getRotationSpeed() : getModel().getRotationSpeed();
-        entity.getBukkitEntity().setRotation(yaw, System.currentTimeMillis() - lastPitchUpdate > PITCH_TIMEOUT ? 0 : entity.getBukkitEntity().getLocation().getPitch());
+        entity.getBukkitEntity().setRotation(yaw, entity.getBukkitEntity().getLocation().getPitch());
     }
 
     @Override
@@ -71,14 +75,10 @@ public class Airplane extends Vehicle<AirplaneModel> {
         Location location = entity.getBukkitEntity().getLocation();
 
         float pitch = location.getPitch();
-        if (System.currentTimeMillis() - lastPitchUpdate > PITCH_TIMEOUT)
-            pitch = 0;
 
         pitch -= getModel().getPitchSpeed();
         pitch = Math.max(getModel().getMinPitch(), pitch);
         entity.getBukkitEntity().setRotation(location.getYaw(), pitch);
-
-        lastPitchUpdate = System.currentTimeMillis();
     }
 
     @Override
@@ -90,14 +90,10 @@ public class Airplane extends Vehicle<AirplaneModel> {
         Location location = entity.getBukkitEntity().getLocation();
 
         float pitch = location.getPitch();
-        if (System.currentTimeMillis() - lastPitchUpdate > PITCH_TIMEOUT)
-            pitch = 0;
 
         pitch += getModel().getPitchSpeed();
         pitch = Math.min(getModel().getMaxPitch(), pitch);
         entity.getBukkitEntity().setRotation(location.getYaw(), pitch);
-
-        lastPitchUpdate = System.currentTimeMillis();
     }
 
     @Override
@@ -111,7 +107,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void onCollide(Entity entity) {
-        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > DAMAGE_DELAY)
+        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis())
             return;
 
         living.damage(getModel().getDamage(getSpeed()), getEntity());
@@ -120,7 +116,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void check() {
-        if (getSpeed(true) == 0 || System.currentTimeMillis() - lastSpeedUpdate < getModel().getSpeedTimeout())
+        if (getSpeed(true) == 0 || isKeyPressed((Player) getDriver(), ButtonType.FORWARD))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
@@ -128,27 +124,34 @@ public class Airplane extends Vehicle<AirplaneModel> {
         Vector direction;
 
         if (location.getBlock().getRelative(BlockFace.DOWN).isPassable()) {
-            setSpeed(getSpeed() * getModel().getFallSpeed());
-            location.setPitch(getModel().getFallPitch());
+            flying = true;
+            FallSpeedInfo info = getModel().getFallSpeed();
+            if (location.getPitch() < info.getPitch()) {
+                location.setPitch(Math.min(location.getPitch() + info.getSmoothPitch(), info.getPitch()));
+                if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
+                    setSpeed(Math.min(getSpeed() * info.getSmoothSpeed(), info.getMaxSpeed()));
+                entity.getBukkitEntity().setRotation(location.getYaw(), location.getPitch());
+            } else if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
+                setSpeed(Math.min(getSpeed() * info.getSpeed(), info.getMaxSpeed()));
             direction = location.getDirection().multiply(getSpeed());
-            entity.getBukkitEntity().setRotation(location.getYaw(), getModel().getFallPitch());
         } else {
+            flying = false;
             setSpeed(getSpeed() * getModel().getSmoothSpeed());
             direction = location.getDirection().multiply(getSpeed()).setY(-1);
             entity.getBukkitEntity().setRotation(location.getYaw(), 0);
         }
 
         entity.getBukkitEntity().setVelocity(direction);
-
-        lastSpeedUpdate = System.currentTimeMillis();
     }
 
     @Override
     public void onBlockCollide() {
-        if (getEntity().getFallDistance() != 0)
+        if (getSpeed(true) <= 0)
             return;
 
+        Entity entity = getEntity();
         setSpeed(0);
-        lastSpeedUpdate = System.currentTimeMillis();
+        entity.setRotation(entity.getLocation().getYaw(), 0);
+        flying = false;
     }
 }

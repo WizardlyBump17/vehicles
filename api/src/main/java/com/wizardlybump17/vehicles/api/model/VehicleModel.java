@@ -44,6 +44,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     private float rotationSpeed;
     private float jumpHeight;
     private long speedTimeout;
+    private int floatingPrecision;
 
     public double getAcceleration(double speed) {
         return MapUtil.getValue(acceleration, speed);
@@ -84,7 +85,8 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
                 "meg-model", megModel,
                 "rotation-speed", rotationSpeed,
                 "jump-height", jumpHeight,
-                "speed-timeout", speedTimeout
+                "speed-timeout", speedTimeout,
+                "floating-precision", floatingPrecision
         ));
     }
 }

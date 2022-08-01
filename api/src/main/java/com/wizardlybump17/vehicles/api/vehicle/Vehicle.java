@@ -3,10 +3,11 @@ package com.wizardlybump17.vehicles.api.vehicle;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.mount.MountablePart;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
+import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
-import com.wizardlybump17.vehicles.api.config.Config;
 import com.wizardlybump17.vehicles.api.controller.EmptyMountController;
+import com.wizardlybump17.vehicles.api.listener.KeyListener;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.util.NumberUtil;
 import lombok.Data;
@@ -36,11 +37,13 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     private final String plate;
     private final ActiveModel megModel;
     private double speed;
+    private final List<KeyListener> keyListeners = new ArrayList<>();
 
     protected Vehicle(M model, String plate, ActiveModel megModel) {
         this.model = model;
         this.megModel = megModel;
         this.plate = plate;
+        addKeyListener(new VehicleKeyListener());
     }
 
     public abstract void move(Player player, double xxa, double zza);
@@ -88,6 +91,12 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
      * The default implementation does nothing.
      */
     public void check() {
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+        if (getDriver() != null)
+            System.out.println(speed);
     }
 
     public void removePassenger(Entity entity) {
@@ -228,8 +237,23 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
 
     public double getSpeed(boolean applyPrecision) {
         if (applyPrecision)
-            return NumberUtil.precision(speed, Config.numberPrecision);
+            return NumberUtil.precision(speed, model.getFloatingPrecision());
         return speed;
+    }
+
+    public void addKeyListener(KeyListener listener) {
+        keyListeners.add(listener);
+    }
+
+    public void removeKeyListener(KeyListener listener) {
+        keyListeners.remove(listener);
+    }
+
+    public boolean isKeyPressed(Player player, ButtonType key) {
+        for (KeyListener listener : keyListeners)
+            if (listener.isKeyPressed(player, key))
+                return true;
+        return false;
     }
 
     public static boolean isVehicle(Entity entity) {

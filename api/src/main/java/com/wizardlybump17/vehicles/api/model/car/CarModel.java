@@ -19,8 +19,21 @@ import java.util.Map;
 @SerializableAs("car")
 public class CarModel extends AutomobileModel<Car> {
 
-    public CarModel(Vehicles plugin, String name, double maxSpeed, double smoothSpeed, @NonNull Map<Double, Double> acceleration, Map<Double, Double> damage, @NonNull Map<Double, Double> breakForce, @NonNull String megModel, float rotationSpeed, float jumpHeight, long speedTimeout, long damageDelay) {
-        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, speedTimeout, damageDelay);
+    public CarModel(
+            Vehicles plugin,
+            String name,
+            double maxSpeed,
+            double smoothSpeed,
+            @NonNull Map<Double, Double> acceleration,
+            Map<Double, Double> damage,
+            @NonNull Map<Double, Double> breakForce,
+            @NonNull String megModel,
+            float rotationSpeed,
+            float jumpHeight,
+            long speedTimeout,
+            long damageDelay,
+            int floatingPrecision) {
+        super(plugin, name, maxSpeed, smoothSpeed, acceleration, damage, breakForce, megModel, rotationSpeed, jumpHeight, speedTimeout, damageDelay, floatingPrecision);
     }
 
     @Override
@@ -65,7 +78,8 @@ public class CarModel extends AutomobileModel<Car> {
                 ((Number) args.getOrDefault("rotation-speed", 0)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
                 ((Number) args.getOrDefault("speed-timeout", 0)).longValue(),
-                ((Number) args.getOrDefault("damage-delay", 0)).longValue()
+                ((Number) args.getOrDefault("damage-delay", 0)).longValue(),
+                (int) args.getOrDefault("floating-precision", 2)
         );
     }
 }

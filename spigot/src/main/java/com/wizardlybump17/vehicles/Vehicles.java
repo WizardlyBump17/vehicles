@@ -4,8 +4,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.wizardlybump17.vehicles.api.config.Messages;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
-import com.wizardlybump17.vehicles.api.model.airplane.MilitaryAirplaneModel;
+import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
 import com.wizardlybump17.vehicles.api.model.car.CarModel;
+import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
+import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
+import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.motorcycle.MotorcycleModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.vehicles.command.VehicleCommand;
@@ -39,9 +42,9 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
 
+        initConfigSerializables();
         initConfigs();
         initListeners();
-        initConfigSerializables();
 
         ArgsReaderRegistry.INSTANCE.add(new VehicleModelArgsReader(getVehicleModelCache()));
         new CommandManager(new BukkitCommandHolder(this)).registerCommands(new VehicleCommand(this));
@@ -104,6 +107,9 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ConfigurationSerialization.registerClass(MotorcycleModel.class);
         ConfigurationSerialization.registerClass(AirplaneModel.class);
         ConfigurationSerialization.registerClass(MilitaryAirplaneModel.class);
+        ConfigurationSerialization.registerClass(TNTInfo.class);
+        ConfigurationSerialization.registerClass(FallSpeedInfo.class);
+        ConfigurationSerialization.registerClass(SpeedInfo.class);
     }
 
     public void reloadModels() {
