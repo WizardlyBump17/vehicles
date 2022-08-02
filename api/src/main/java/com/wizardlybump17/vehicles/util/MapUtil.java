@@ -13,7 +13,10 @@ public class MapUtil {
         if (map.containsKey(current))
             return map.get(current);
 
-        double previous = 0;
+        if (map.isEmpty())
+            return 0;
+
+        double previous = map.keySet().iterator().next();
         for (Map.Entry<Double, Double> entry : map.entrySet()) {
             if (entry.getKey() > current)
                 return entry.getValue();
