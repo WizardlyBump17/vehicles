@@ -1,5 +1,6 @@
 package com.wizardlybump17.vehicles.api.model.info;
 
+import com.wizardlybump17.vehicles.util.MapUtil;
 import com.wizardlybump17.wlib.util.MapUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,14 @@ public class SpeedInfo implements ConfigurationSerializable {
     private Map<Double, Double> acceleration;
     private Map<Double, Double> breakForce;
 
+    public double getAcceleration(double speed) {
+        return MapUtil.getValue(acceleration, speed);
+    }
+
+    public double getBreakForce(double speed) {
+        return MapUtil.getValue(breakForce, speed);
+    }
+
     @NotNull
     @Override
     public Map<String, Object> serialize() {
@@ -39,7 +48,7 @@ public class SpeedInfo implements ConfigurationSerializable {
                 ((Number) map.getOrDefault("min", 0d)).doubleValue(),
                 ((Number) map.getOrDefault("max", 3d)).doubleValue(),
                 ((Number) map.getOrDefault("smooth", 0.9)).doubleValue(),
-                (Map<Double, Double>) map.getOrDefault(
+                new TreeMap<>((Map<Double, Double>) map.getOrDefault(
                         "acceleration",
                         MapUtils.mapOf(
                                 0.5, 0.02,
@@ -48,8 +57,8 @@ public class SpeedInfo implements ConfigurationSerializable {
                                 2.0, 0.08,
                                 2.5, 0.1
                         )
-                ),
-                (Map<Double, Double>) map.getOrDefault(
+                )),
+                new TreeMap<>((Map<Double, Double>) map.getOrDefault(
                         "break-force",
                         MapUtils.mapOf(
                                 0.5, 2.0,
@@ -58,34 +67,29 @@ public class SpeedInfo implements ConfigurationSerializable {
                                 2.0, 8.0,
                                 2.5, 10.0
                         )
-                )
+                ))
         );
     }
 
     public static SpeedInfo defaultInfo() {
-        Map<Double, Double> acceleration = MapUtils.mapOf(
-                0.5, 0.02,
-                1.0, 0.04,
-                1.5, 0.06,
-                2.0, 0.08,
-                2.5, 0.1
-        );
-        Map<Double, Double> breakForce = MapUtils.mapOf(
-                0.5, 2.0,
-                1.0, 4.0,
-                1.5, 6.0,
-                2.0, 8.0,
-                2.5, 10.0
-        );
-
-        acceleration = new TreeMap<>(acceleration);
-        breakForce = new TreeMap<>(breakForce);
         return new SpeedInfo(
                 0,
                 3,
                 0.9,
-                acceleration,
-                breakForce
+                new TreeMap<>(MapUtils.mapOf(
+                        0.5, 0.02,
+                        1.0, 0.04,
+                        1.5, 0.06,
+                        2.0, 0.08,
+                        2.5, 0.1
+                )),
+                new TreeMap<>(MapUtils.mapOf(
+                        0.5, 2.0,
+                        1.0, 4.0,
+                        1.5, 6.0,
+                        2.0, 8.0,
+                        2.5, 10.0
+                ))
         );
     }
 }

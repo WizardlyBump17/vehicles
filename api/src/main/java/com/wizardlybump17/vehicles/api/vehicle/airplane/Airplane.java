@@ -113,7 +113,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
             return;
 
         living.damage(getModel().getDamage(getSpeed()), getEntity());
-        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamageDelay());
+        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamage().getDelay());
     }
 
     @Override

@@ -3,9 +3,9 @@ package com.wizardlybump17.vehicles.api.model;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.Vehicles;
+import com.wizardlybump17.vehicles.api.model.info.DamageInfo;
 import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
-import com.wizardlybump17.vehicles.util.MapUtil;
 import com.wizardlybump17.wlib.item.ItemBuilder;
 import com.wizardlybump17.wlib.util.MapUtils;
 import lombok.AllArgsConstructor;
@@ -34,9 +34,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     private final Vehicles plugin;
     private final String name;
     private final SpeedInfo speed;
-    @NonNull
-    private Map<Double, Double> damage;
-    private long damageDelay;
+    private final DamageInfo damage;
     @NonNull
     private String megModel;
     private float rotationSpeed;
@@ -44,15 +42,15 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     private int floatingPrecision;
 
     public double getAcceleration(double speed) {
-        return MapUtil.getValue(this.speed.getAcceleration(), speed);
+        return this.speed.getAcceleration(speed);
     }
 
     public double getDamage(double speed) {
-        return MapUtil.getValue(damage, speed);
+        return damage.getDamage(speed);
     }
 
     public double getBreakForce(double speed) {
-        return MapUtil.getValue(this.speed.getBreakForce(), speed);
+        return this.speed.getBreakForce(speed);
     }
 
     public abstract V createVehicle(Location location, String plate);

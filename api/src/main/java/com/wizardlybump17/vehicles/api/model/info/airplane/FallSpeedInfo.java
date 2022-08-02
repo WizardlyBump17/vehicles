@@ -34,14 +34,14 @@ public class FallSpeedInfo implements ConfigurationSerializable {
     public static FallSpeedInfo deserialize(Map<String, Object> map) {
         return new FallSpeedInfo(
                 ((Number) map.getOrDefault("speed", 1.01)).doubleValue(),
-                ((Number) map.getOrDefault("smooth-speed", 0.9)).doubleValue(),
+                ((Number) map.getOrDefault("smooth-speed", 1.01)).doubleValue(),
                 ((Number) map.getOrDefault("smooth-pitch", 1.5f)).floatValue(),
                 ((Number) map.getOrDefault("pitch", 45f)).floatValue(),
-                ((Number) map.getOrDefault("max-speed", 0d)).doubleValue()
+                ((Number) map.getOrDefault("max-speed", 3f)).doubleValue()
         );
     }
 
     public static FallSpeedInfo defaultInfo() {
-        return new FallSpeedInfo(1.01, 0.9, 1.5f, 45, 0);
+        return new FallSpeedInfo(1.01, 1.01, 1.5f, 45, 3f);
     }
 }

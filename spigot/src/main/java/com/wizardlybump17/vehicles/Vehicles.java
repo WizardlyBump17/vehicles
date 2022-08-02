@@ -6,6 +6,7 @@ import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
 import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
 import com.wizardlybump17.vehicles.api.model.car.CarModel;
+import com.wizardlybump17.vehicles.api.model.info.DamageInfo;
 import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
@@ -110,6 +111,7 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ConfigurationSerialization.registerClass(TNTInfo.class);
         ConfigurationSerialization.registerClass(FallSpeedInfo.class);
         ConfigurationSerialization.registerClass(SpeedInfo.class);
+        ConfigurationSerialization.registerClass(DamageInfo.class);
     }
 
     public void reloadModels() {

@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
+import com.wizardlybump17.vehicles.api.model.info.DamageInfo;
 import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.car.Car;
 import lombok.NonNull;
@@ -24,13 +25,12 @@ public class CarModel extends AutomobileModel<Car> {
             Vehicles plugin,
             String name,
             SpeedInfo speed,
-            Map<Double, Double> damage,
-            long damageDelay,
+            DamageInfo damage,
             @NonNull String megModel,
             float rotationSpeed,
             float jumpHeight,
             int floatingPrecision) {
-        super(plugin, name, speed, damage, damageDelay, megModel, rotationSpeed, jumpHeight, floatingPrecision);
+        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, floatingPrecision);
     }
 
     @Override
@@ -67,8 +67,7 @@ public class CarModel extends AutomobileModel<Car> {
                 Vehicles.getInstance(),
                 (String) args.get("name"),
                 (SpeedInfo) args.getOrDefault("speed", SpeedInfo.defaultInfo()),
-                (Map<Double, Double>) args.get("damage"),
-                ((Number) args.getOrDefault("damage-delay", 0)).longValue(),
+                (DamageInfo) args.getOrDefault("damage", DamageInfo.defaultInfo()),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),

@@ -83,11 +83,11 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
 
     @Override
     public void onCollide(Entity entity) {
-        if (getSpeed(true) == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis() || System.currentTimeMillis() - lastSpeedUpdate > getModel().getDamageDelay())
+        if (getSpeed(true) == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis())
             return;
 
         living.damage(getModel().getDamage(getSpeed()), getEntity());
-        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamageDelay());
+        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamage().getDelay());
     }
 
     @Override
