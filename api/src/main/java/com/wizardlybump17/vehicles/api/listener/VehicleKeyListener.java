@@ -1,7 +1,6 @@
-package com.wizardlybump17.vehicles.api.vehicle;
+package com.wizardlybump17.vehicles.api.listener;
 
 import com.wizardlybump17.vehicles.api.ButtonType;
-import com.wizardlybump17.vehicles.api.listener.AbstractKeyListener;
 import org.bukkit.entity.Player;
 
 public class VehicleKeyListener extends AbstractKeyListener {
