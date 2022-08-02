@@ -8,6 +8,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 @Data
 @AllArgsConstructor
@@ -62,24 +63,29 @@ public class SpeedInfo implements ConfigurationSerializable {
     }
 
     public static SpeedInfo defaultInfo() {
+        Map<Double, Double> acceleration = MapUtils.mapOf(
+                0.5, 0.02,
+                1.0, 0.04,
+                1.5, 0.06,
+                2.0, 0.08,
+                2.5, 0.1
+        );
+        Map<Double, Double> breakForce = MapUtils.mapOf(
+                0.5, 2.0,
+                1.0, 4.0,
+                1.5, 6.0,
+                2.0, 8.0,
+                2.5, 10.0
+        );
+
+        acceleration = new TreeMap<>(acceleration);
+        breakForce = new TreeMap<>(breakForce);
         return new SpeedInfo(
                 0,
                 3,
                 0.9,
-                MapUtils.mapOf(
-                        0.5, 0.02,
-                        1.0, 0.04,
-                        1.5, 0.06,
-                        2.0, 0.08,
-                        2.5, 0.1
-                ),
-                MapUtils.mapOf(
-                        0.5, 2.0,
-                        1.0, 4.0,
-                        1.5, 6.0,
-                        2.0, 8.0,
-                        2.5, 10.0
-                )
+                acceleration,
+                breakForce
         );
     }
 }

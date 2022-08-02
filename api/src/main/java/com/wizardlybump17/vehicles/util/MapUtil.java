@@ -19,6 +19,7 @@ public class MapUtil {
                 return entry.getValue();
             previous = entry.getKey();
         }
-        return previous;
+
+        return map.get(previous);
     }
 }

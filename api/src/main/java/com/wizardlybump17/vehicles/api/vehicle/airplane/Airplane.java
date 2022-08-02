@@ -20,8 +20,6 @@ import java.util.Map;
 
 public class Airplane extends Vehicle<AirplaneModel> {
 
-    public static final long DAMAGE_DELAY = 1000;
-
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
     private boolean flying;
 
@@ -45,7 +43,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
         if (zza < 0) {
             double speed = getSpeed() / getModel().getBreakForce(getSpeed());
-            setSpeed(flying ? speed : speed);
+            setSpeed(flying ? Math.max(speed, getModel().getSpeed().getMin()) : speed);
         } else
             setSpeed(Math.min(getSpeed() + getModel().getAcceleration(getSpeed()), speedInfo.getMax()));
 
@@ -111,11 +109,11 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void onCollide(Entity entity) {
-        if (getSpeed() == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis())
+        if (getSpeed(true) == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis())
             return;
 
         living.damage(getModel().getDamage(getSpeed()), getEntity());
-        damagedEntities.put(entity, System.currentTimeMillis() + DAMAGE_DELAY);
+        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamageDelay());
     }
 
     @Override
