@@ -41,18 +41,6 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     private float jumpHeight;
     private int floatingPrecision;
 
-    public double getAcceleration(double speed) {
-        return this.speed.getAcceleration(speed);
-    }
-
-    public double getDamage(double speed) {
-        return damage.getDamage(speed);
-    }
-
-    public double getBreakForce(double speed) {
-        return this.speed.getBreakForce(speed);
-    }
-
     public abstract V createVehicle(Location location, String plate);
 
     public ActiveModel getMegModel() {
