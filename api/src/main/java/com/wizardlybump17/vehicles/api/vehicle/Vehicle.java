@@ -8,6 +8,7 @@ import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
 import com.wizardlybump17.vehicles.api.controller.EmptyMountController;
 import com.wizardlybump17.vehicles.api.listener.KeyListener;
+import com.wizardlybump17.vehicles.api.listener.VehicleKeyListener;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.util.NumberUtil;
 import lombok.Data;
@@ -20,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,9 +63,15 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     public abstract void onCollide(Entity entity);
 
     /**
-     * Called when the vehicle collides with a block AND can jump.
+     * Called when the vehicle collides with a block (frontal collision)
      */
     public void onBlockCollide() {
+    }
+
+    /**
+     * Called when the vehicle jumps
+     */
+    public void onBlockJump() {
     }
 
     /**
@@ -91,6 +99,10 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
      * The default implementation does nothing.
      */
     public void check() {
+    }
+
+    public boolean isOnGround() {
+        return getEntity().isOnGround();
     }
 
     public void setSpeed(double speed) {
@@ -231,10 +243,6 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
         removeEntity(getDriver());
     }
 
-    public double getSpeed() {
-        return speed;
-    }
-
     public double getSpeed(boolean applyPrecision) {
         if (applyPrecision)
             return NumberUtil.precision(speed, model.getFloatingPrecision());
@@ -249,11 +257,24 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
         keyListeners.remove(listener);
     }
 
-    public boolean isKeyPressed(Player player, ButtonType key) {
+    public boolean isKeyPressed(Player player, ButtonType... key) {
         for (KeyListener listener : keyListeners)
             if (listener.isKeyPressed(player, key))
                 return true;
         return false;
+    }
+
+    protected void applyVelocity(Vector vector) {
+        applyVelocity(vector, vector.getY());
+    }
+
+    protected void applyVelocity(Vector vector, double y) {
+        if (getSpeed(true) == 0)
+            return;
+
+        Entity entity = getEntity();
+        vector.multiply(getSpeed());
+        entity.setVelocity(vector.setY(y));
     }
 
     public static boolean isVehicle(Entity entity) {
