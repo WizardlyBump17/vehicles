@@ -198,7 +198,7 @@ public class AirplaneEntity extends EntityCow {
             }
 
             if (vec3d2.i() > vec3d1.i()) {
-                handle.onBlockCollide();
+                handle.onBlockJump();
                 return vec3d2.e(a(this, new Vec3D(0.0, -vec3d2.c + vec3d.c, 0.0), axisalignedbb.c(vec3d2), this.t, voxelshapecollision, streamaccumulator));
             }
         }
@@ -216,5 +216,11 @@ public class AirplaneEntity extends EntityCow {
         }
 
         return vec3d1;
+    }
+
+    @Override
+    public boolean isOnGround() {
+        Vec3D vec3d = this.a(new Vec3D(0, -1, 0), EnumMoveType.a);
+        return vec3d.c != this.g1(vec3d).c && vec3d.c < 0.0;
     }
 }

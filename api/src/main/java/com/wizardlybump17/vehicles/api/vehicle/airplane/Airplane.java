@@ -4,7 +4,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
-import com.wizardlybump17.vehicles.api.info.SpeedInfo;
+import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
@@ -32,9 +32,9 @@ public class Airplane extends Vehicle<AirplaneModel> {
             return;
 
         Vector direction = getEntity().getLocation().getDirection();
-        SpeedInfo speedInfo = getModel().getSpeed();
+        AirplaneSpeedInfo speedInfo = getModel().getSpeed();
 
-        if (zza > 0 && getSpeed() > speedInfo.getMax()) {
+        if (zza > 0 && getSpeed() > speedInfo.getMax() || getSpeed() >= speedInfo.getMaxFlySpeed() && !isOnGround()) {
             applyVelocity(direction);
             return;
         }
@@ -47,10 +47,10 @@ public class Airplane extends Vehicle<AirplaneModel> {
             else
                 speed -= speedInfo.getBreakAcceleration(-speed); // B) :D
 
-            setSpeed(Math.max(speed, speedInfo.getMin()));
+            setSpeed(Math.max(speed, isOnGround() ? speedInfo.getMin() : speedInfo.getMinFlySpeed()));
         } else {
             speed += speedInfo.getAcceleration(speed);
-            setSpeed(Math.min(speed, speedInfo.getMax()));
+            setSpeed(Math.min(speed, isOnGround() ? speedInfo.getMax() : speedInfo.getMaxFlySpeed()));
         }
 
         applyVelocity(direction);

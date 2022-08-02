@@ -5,6 +5,7 @@ import com.wizardlybump17.vehicles.api.config.Messages;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
 import com.wizardlybump17.vehicles.api.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.info.TNTInfo;
+import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
@@ -108,9 +109,12 @@ public class Vehicles extends com.wizardlybump17.vehicles.api.Vehicles {
         ConfigurationSerialization.registerClass(MotorcycleModel.class);
         ConfigurationSerialization.registerClass(AirplaneModel.class);
         ConfigurationSerialization.registerClass(MilitaryAirplaneModel.class);
+
         ConfigurationSerialization.registerClass(TNTInfo.class);
+
         ConfigurationSerialization.registerClass(FallSpeedInfo.class);
         ConfigurationSerialization.registerClass(SpeedInfo.class);
+        ConfigurationSerialization.registerClass(AirplaneSpeedInfo.class);
         ConfigurationSerialization.registerClass(DamageInfo.class);
     }
 

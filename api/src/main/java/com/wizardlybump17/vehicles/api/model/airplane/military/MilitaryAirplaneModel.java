@@ -7,8 +7,8 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
-import com.wizardlybump17.vehicles.api.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.info.TNTInfo;
+import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
 import com.wizardlybump17.vehicles.api.vehicle.airplane.MilitaryAirplane;
@@ -42,7 +42,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     public MilitaryAirplaneModel(
             Vehicles plugin,
             String name,
-            SpeedInfo speed,
+            AirplaneSpeedInfo speed,
             DamageInfo damage,
             @NonNull String megModel,
             float rotationSpeed,
@@ -99,7 +99,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         return new MilitaryAirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
-                (SpeedInfo) args.getOrDefault("speed", SpeedInfo.defaultInfo()),
+                (AirplaneSpeedInfo) args.getOrDefault("speed", AirplaneSpeedInfo.defaultInfo()),
                 (DamageInfo) args.getOrDefault("damage", DamageInfo.defaultInfo()),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0f)).floatValue(),

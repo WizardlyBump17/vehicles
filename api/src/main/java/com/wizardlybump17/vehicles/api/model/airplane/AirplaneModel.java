@@ -7,7 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
-import com.wizardlybump17.vehicles.api.info.SpeedInfo;
+import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.vehicle.airplane.Airplane;
@@ -37,7 +37,7 @@ public class AirplaneModel extends VehicleModel<Airplane> {
     public AirplaneModel(
             Vehicles plugin,
             String name,
-            SpeedInfo speed,
+            AirplaneSpeedInfo speed,
             DamageInfo damage,
             @NonNull String megModel,
             float rotationSpeed,
@@ -52,6 +52,11 @@ public class AirplaneModel extends VehicleModel<Airplane> {
         this.maxPitch = maxPitch;
         this.minPitch = minPitch;
         this.fallSpeed = fallSpeed;
+    }
+
+    @Override
+    public AirplaneSpeedInfo getSpeed() {
+        return (AirplaneSpeedInfo) super.getSpeed();
     }
 
     @Override
@@ -100,7 +105,7 @@ public class AirplaneModel extends VehicleModel<Airplane> {
         return new AirplaneModel(
                 Vehicles.getInstance(),
                 (String) args.get("name"),
-                (SpeedInfo) args.getOrDefault("speed", SpeedInfo.defaultInfo()),
+                (AirplaneSpeedInfo) args.getOrDefault("speed", AirplaneSpeedInfo.defaultInfo()),
                 (DamageInfo) args.getOrDefault("damage", DamageInfo.defaultInfo()),
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0f)).floatValue(),

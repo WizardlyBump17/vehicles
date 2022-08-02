@@ -1,5 +1,6 @@
 package com.wizardlybump17.vehicles.api.info.airplane;
 
+import com.wizardlybump17.wlib.util.MapUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -22,7 +23,7 @@ public class FallSpeedInfo implements ConfigurationSerializable {
     @NotNull
     @Override
     public Map<String, Object> serialize() {
-        return Map.of(
+        return MapUtils.mapOf(
                 "speed", speed,
                 "smooth-speed", smoothSpeed,
                 "smooth-pitch", smoothPitch,
