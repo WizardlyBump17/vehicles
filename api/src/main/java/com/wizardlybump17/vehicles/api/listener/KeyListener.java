@@ -11,5 +11,5 @@ public interface KeyListener {
 
     void onKeyReleased(Player player, ButtonType button);
 
-    boolean isKeyPressed(Player player, ButtonType button);
+    boolean isKeyPressed(Player player, ButtonType... button);
 }

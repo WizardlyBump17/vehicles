@@ -118,17 +118,23 @@ public abstract class AbstractKeyListener implements KeyListener {
     }
 
     @Override
-    public boolean isKeyPressed(Player player, ButtonType button) {
+    public boolean isKeyPressed(Player player, ButtonType... buttons) {
         double xxa = xxas.getOrDefault(player, 0d);
         double zza = zzas.getOrDefault(player, 0d);
 
-        return switch (button) {
-            case FORWARD -> zza > 0;
-            case BACKWARD -> zza < 0;
-            case ROTATE_LEFT -> xxa > 0;
-            case ROTATE_RIGHT -> xxa < 0;
-            case UP -> jumping.getOrDefault(player, false);
-            case DOWN -> shifting.getOrDefault(player, false);
-        };
+        for (ButtonType type : buttons) {
+            boolean pressed = switch (type) {
+                case FORWARD -> zza > 0;
+                case BACKWARD -> zza < 0;
+                case ROTATE_LEFT -> xxa > 0;
+                case ROTATE_RIGHT -> xxa < 0;
+                case UP -> jumping.getOrDefault(player, false);
+                case DOWN -> shifting.getOrDefault(player, false);
+            };
+            if (!pressed)
+                return false;
+        }
+
+        return true;
     }
 }
