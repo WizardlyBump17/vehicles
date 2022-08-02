@@ -1,4 +1,4 @@
-package com.wizardlybump17.vehicles.api.model.info.airplane;
+package com.wizardlybump17.vehicles.api.info.airplane;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.wizardlybump17.vehicles.api.model.info;
+package com.wizardlybump17.vehicles.api.info;
 
 import com.wizardlybump17.vehicles.util.MapUtil;
 import lombok.AllArgsConstructor;

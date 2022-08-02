@@ -2,8 +2,8 @@ package com.wizardlybump17.vehicles.api.vehicle.airplane;
 
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.PartEntity;
+import com.wizardlybump17.vehicles.api.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
-import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;

@@ -2,14 +2,14 @@ package com.wizardlybump17.vehicles;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.wizardlybump17.vehicles.api.config.Messages;
+import com.wizardlybump17.vehicles.api.info.DamageInfo;
+import com.wizardlybump17.vehicles.api.info.SpeedInfo;
+import com.wizardlybump17.vehicles.api.info.TNTInfo;
+import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
 import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
 import com.wizardlybump17.vehicles.api.model.car.CarModel;
-import com.wizardlybump17.vehicles.api.model.info.DamageInfo;
-import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
-import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
-import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.motorcycle.MotorcycleModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.vehicles.command.VehicleCommand;

@@ -2,9 +2,9 @@ package com.wizardlybump17.vehicles.listener;
 
 import com.wizardlybump17.vehicles.api.cache.VehicleCache;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
+import com.wizardlybump17.vehicles.api.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
-import com.wizardlybump17.vehicles.api.model.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.GameMode;
