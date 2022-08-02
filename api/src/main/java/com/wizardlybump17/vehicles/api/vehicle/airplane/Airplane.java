@@ -4,11 +4,11 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
+import com.wizardlybump17.vehicles.api.model.info.DamageInfo;
 import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.model.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -21,7 +21,6 @@ import java.util.Map;
 public class Airplane extends Vehicle<AirplaneModel> {
 
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
-    private boolean flying;
 
     public Airplane(AirplaneModel model, String plate, ActiveModel megModel) {
         super(model, plate, megModel);
@@ -33,7 +32,6 @@ public class Airplane extends Vehicle<AirplaneModel> {
             return;
 
         Vector direction = getEntity().getLocation().getDirection();
-
         SpeedInfo speedInfo = getModel().getSpeed();
 
         if (zza > 0 && getSpeed() > speedInfo.getMax()) {
@@ -41,19 +39,21 @@ public class Airplane extends Vehicle<AirplaneModel> {
             return;
         }
 
+        double speed = getSpeed();
+
         if (zza < 0) {
-            double speed = getSpeed() / getModel().getBreakForce(getSpeed());
-            setSpeed(flying ? Math.max(speed, getModel().getSpeed().getMin()) : speed);
-        } else
-            setSpeed(Math.min(getSpeed() + getModel().getAcceleration(getSpeed()), speedInfo.getMax()));
+            if (getSpeed(true) > 0)
+                speed /= speedInfo.getBreakForce(speed);
+            else
+                speed -= speedInfo.getBreakAcceleration(-speed); // B) :D
+
+            setSpeed(Math.max(speed, speedInfo.getMin()));
+        } else {
+            speed += speedInfo.getAcceleration(speed);
+            setSpeed(Math.min(speed, speedInfo.getMax()));
+        }
 
         applyVelocity(direction);
-    }
-
-    private void applyVelocity(Vector vector) {
-        Entity entity = getEntity();
-        vector.multiply(getSpeed());
-        entity.setVelocity(vector);
     }
 
     @Override
@@ -112,8 +112,9 @@ public class Airplane extends Vehicle<AirplaneModel> {
         if (getSpeed(true) == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis())
             return;
 
-        living.damage(getModel().getDamage(getSpeed()), getEntity());
-        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamage().getDelay());
+        DamageInfo damage = getModel().getDamage();
+        living.damage(damage.getDamage(getSpeed()), getEntity());
+        damagedEntities.put(entity, System.currentTimeMillis() + damage.getDelay());
     }
 
     @Override
@@ -123,30 +124,29 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
         Location location = entity.getBukkitEntity().getLocation();
-        Vector direction;
+        Vector direction = location.getDirection();
 
-        if (location.getBlock().getRelative(BlockFace.DOWN).isPassable()) {
-            flying = true;
-            FallSpeedInfo info = getModel().getFallSpeed();
-            if (location.getPitch() < info.getPitch()) {
-                if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
-                    setSpeed(Math.min(getSpeed() * info.getSmoothSpeed(), info.getMaxSpeed()));
-
-                if (!isKeyPressed((Player) getDriver(), ButtonType.UP)) {
-                    location.setPitch(Math.min(location.getPitch() + info.getSmoothPitch(), info.getPitch()));
-                    entity.getBukkitEntity().setRotation(location.getYaw(), location.getPitch());
-                }
-            } else if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
-                setSpeed(Math.min(getSpeed() * info.getSpeed(), info.getMaxSpeed()));
-            direction = location.getDirection().multiply(getSpeed());
-        } else {
-            flying = false;
+        if (entity.isOnGround()) { //we are on ground
             setSpeed(getSpeed() * getModel().getSpeed().getSmooth());
-            direction = location.getDirection().multiply(getSpeed()).setY(-1);
             entity.getBukkitEntity().setRotation(location.getYaw(), 0);
+            applyVelocity(direction, -1);
+            return;
         }
 
-        entity.getBukkitEntity().setVelocity(direction);
+        // airplane falling
+        FallSpeedInfo info = getModel().getFallSpeed();
+        if (location.getPitch() < info.getPitch()) { //we are not in the right pitch yet
+            if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD)) //player is not trying to control the airplane
+                setSpeed(Math.min(getSpeed() * info.getSmoothSpeed(), info.getMaxSpeed()));
+
+            if (!isKeyPressed((Player) getDriver(), ButtonType.UP)) { //player is not trying to control the airplane
+                location.setPitch(Math.min(location.getPitch() + info.getSmoothPitch(), info.getPitch()));
+                entity.getBukkitEntity().setRotation(location.getYaw(), location.getPitch());
+            }
+        } else if (!isKeyPressed((Player) getDriver(), ButtonType.BACKWARD)) //right pitch and the player is not trying to control the airplane
+            setSpeed(Math.min(getSpeed() * info.getSpeed(), info.getMaxSpeed()));
+
+        applyVelocity(direction);
     }
 
     @Override
@@ -157,6 +157,5 @@ public class Airplane extends Vehicle<AirplaneModel> {
         Entity entity = getEntity();
         setSpeed(0);
         entity.setRotation(entity.getLocation().getYaw(), 0);
-        flying = false;
     }
 }

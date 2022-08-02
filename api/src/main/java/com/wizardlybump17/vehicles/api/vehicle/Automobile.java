@@ -4,6 +4,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
+import com.wizardlybump17.vehicles.api.model.info.DamageInfo;
 import com.wizardlybump17.vehicles.api.model.info.SpeedInfo;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
@@ -17,9 +18,7 @@ import java.util.Map;
 
 public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M> {
 
-    private long lastSpeedUpdate;
     private final Map<Entity, Long> damagedEntities = new HashMap<>();
-    private boolean reverse = false;
 
     protected Automobile(M model, String plate, ActiveModel megModel) {
         super(model, plate, megModel);
@@ -34,18 +33,32 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         if (entity.getFallDistance() != 0)
             return;
 
-        lastSpeedUpdate = System.currentTimeMillis();
-
-        setSpeed(Math.min(getModel().getSpeed().getMax(), getSpeed() + getModel().getAcceleration(getSpeed())));
-
-        Location location = entity.getLocation();
+        Location location = getEntity().getLocation();
         location.setPitch(0);
+
         Vector direction = location.getDirection();
-        direction.multiply(zza > 0 ? getSpeed() : -getSpeed() / getModel().getBreakForce(getSpeed()));
+        SpeedInfo speedInfo = getModel().getSpeed();
 
-        entity.setVelocity(direction.setY(-1));
+        if (zza > 0 && getSpeed() > speedInfo.getMax()) {
+            applyVelocity(direction);
+            return;
+        }
 
-        reverse = zza < 0;
+        double speed = getSpeed();
+
+        if (zza < 0) {
+            if (getSpeed(true) > 0)
+                speed /= speedInfo.getBreakForce(speed);
+            else
+                speed -= speedInfo.getBreakAcceleration(-speed); // B) :D
+
+            setSpeed(Math.max(speed, speedInfo.getMin()));
+        } else {
+            speed += speedInfo.getAcceleration(speed);
+            setSpeed(Math.min(speed, speedInfo.getMax()));
+        }
+
+        applyVelocity(direction, -1);
     }
 
     @Override
@@ -86,31 +99,25 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
         if (getSpeed(true) == 0 || !(entity instanceof LivingEntity living) || damagedEntities.getOrDefault(entity, System.currentTimeMillis()) > System.currentTimeMillis())
             return;
 
-        living.damage(getModel().getDamage(getSpeed()), getEntity());
-        damagedEntities.put(entity, System.currentTimeMillis() + getModel().getDamage().getDelay());
+        DamageInfo damageInfo = getModel().getDamage();
+        living.damage(damageInfo.getDamage(getSpeed()), getEntity());
+        damagedEntities.put(entity, System.currentTimeMillis() + damageInfo.getDelay());
     }
 
     @Override
     public void check() {
-        if (getSpeed(true) == 0 || isKeyPressed((Player) getDriver(), ButtonType.FORWARD))
+        if (getSpeed(true) == 0 || isKeyPressed((Player) getDriver(), ButtonType.FORWARD) || isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
             return;
 
-        SpeedInfo speed = getModel().getSpeed();
+        SpeedInfo speedInfo = getModel().getSpeed();
+        setSpeed(getSpeed() * speedInfo.getSmooth());
 
         Entity entity = getEntity();
 
         Location location = entity.getLocation();
         location.setPitch(0);
-        Vector direction;
-        if (reverse)
-            direction = location.getDirection().multiply(-getSpeed() * speed.getSmooth() / getModel().getBreakForce(getSpeed()));
-        else
-            direction = location.getDirection().multiply(getSpeed() * speed.getSmooth());
 
+        Vector direction = location.getDirection().multiply(getSpeed());
         entity.setVelocity(direction.setY(-1));
-
-        setSpeed(getSpeed() * speed.getSmooth());
-
-        lastSpeedUpdate = System.currentTimeMillis();
     }
 }
