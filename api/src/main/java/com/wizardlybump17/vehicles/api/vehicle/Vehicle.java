@@ -6,6 +6,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
+import com.wizardlybump17.vehicles.api.config.Config;
 import com.wizardlybump17.vehicles.api.controller.EmptyMountController;
 import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.listener.key.KeyListener;
@@ -13,6 +14,8 @@ import com.wizardlybump17.vehicles.api.listener.key.VehicleKeyListener;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.util.NumberUtil;
 import lombok.Data;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -98,19 +101,21 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
 
     /**
      * Called by {@link com.wizardlybump17.vehicles.api.task.CheckVehiclesTask} each tick asynchronously. Can be useful for anything.<br>
-     * The default implementation does nothing.
+     * The default implementation send the vehicle status.
      */
     public void check() {
+        if (!(getDriver() instanceof Player player))
+            return;
+
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
+                "§aSpeed: " + Config.FORMAT.format(Math.abs(getSpeed(true)))
+                + " | Rotation: " + Config.FORMAT.format(((CraftEntity) getEntity()).getHandle().getHeadRotation())
+                + " | Pitch: " + Config.FORMAT.format(-((CraftEntity) getEntity()).getHandle().getXRot())
+        ));
     }
 
     public boolean isOnGround() {
         return getEntity().isOnGround();
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-        if (getDriver() != null)
-            System.out.println(speed);
     }
 
     public void removePassenger(Entity entity) {

@@ -106,6 +106,8 @@ public abstract class Automobile<M extends AutomobileModel<?>> extends Vehicle<M
 
     @Override
     public void check() {
+        super.check();
+
         if (getSpeed(true) == 0 || isKeyPressed((Player) getDriver(), ButtonType.FORWARD) || isKeyPressed((Player) getDriver(), ButtonType.BACKWARD))
             return;
 

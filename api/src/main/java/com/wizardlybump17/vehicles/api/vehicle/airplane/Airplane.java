@@ -120,6 +120,8 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void check() {
+        super.check();
+
         if (getSpeed(true) == 0 || isKeyPressed((Player) getDriver(), ButtonType.FORWARD))
             return;
 
