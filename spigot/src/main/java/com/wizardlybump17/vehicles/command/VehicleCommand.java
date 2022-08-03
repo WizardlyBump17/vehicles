@@ -2,6 +2,7 @@ package com.wizardlybump17.vehicles.command;
 
 import com.wizardlybump17.vehicles.Vehicles;
 import com.wizardlybump17.vehicles.api.config.Messages;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.wlib.command.Command;
@@ -40,5 +41,23 @@ public record VehicleCommand(Vehicles plugin) {
 
         optional.get().removeEntity(sender.getHandle());
         sender.sendMessage(Messages.leftVehicle);
+    }
+
+    @Command(execution = "vehicle lock <type>", permission = "vehicles.lock")
+    public void lock(PlayerSender sender, String type) {
+        Optional<Vehicle<?>> optional = plugin.getVehicleCache().get(sender.getHandle(), true);
+        if (optional.isEmpty()) {
+            sender.sendMessage(Messages.notInVehicle);
+            return;
+        }
+
+        Vehicle<?> vehicle = optional.get();
+        try {
+            LockInfo.LockType lockType = LockInfo.LockType.valueOf(type.toUpperCase());
+            vehicle.lock(lockType, !vehicle.isLocked(lockType));
+            sender.sendMessage(Messages.lockedVehicle.replace("{type}", lockType.name()));
+        } catch (IllegalArgumentException e) {
+            sender.sendMessage(Messages.invalidLockType);
+        }
     }
 }
