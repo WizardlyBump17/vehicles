@@ -1,4 +1,4 @@
-package com.wizardlybump17.vehicles.api.listener;
+package com.wizardlybump17.vehicles.api.listener.key;
 
 import com.wizardlybump17.vehicles.api.ButtonType;
 import org.bukkit.entity.Player;

@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.wizardlybump17.vehicles.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleCache;
-import com.wizardlybump17.vehicles.api.listener.KeyListener;
+import com.wizardlybump17.vehicles.api.listener.key.KeyListener;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import net.minecraft.network.protocol.game.PacketPlayInSteerVehicle;
 import org.bukkit.Bukkit;
