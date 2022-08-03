@@ -4,6 +4,7 @@ import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
 import com.wizardlybump17.wlib.item.ItemBuilder;
@@ -40,6 +41,7 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
     private float rotationSpeed;
     private float jumpHeight;
     private int floatingPrecision;
+    private LockInfo lock;
 
     public abstract V createVehicle(Location location, String plate);
 

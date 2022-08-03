@@ -4,6 +4,7 @@ import com.ticxo.modelengine.api.model.ActiveModel;
 import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
@@ -34,7 +35,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
         Vector direction = getEntity().getLocation().getDirection();
         AirplaneSpeedInfo speedInfo = getModel().getSpeed();
 
-        if (zza > 0 && getSpeed() > speedInfo.getMax() || getSpeed() >= speedInfo.getMaxFlySpeed() && !isOnGround()) {
+        if (isLocked(LockInfo.LockType.SPEED) || (zza > 0 && getSpeed() > speedInfo.getMax()) || (getSpeed() >= speedInfo.getMaxFlySpeed() && !isOnGround())) {
             applyVelocity(direction);
             return;
         }
@@ -58,7 +59,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void rotate(Player player, double xxa, double zza) {
-        if (getSpeed(true) == 0 || xxa == 0 || !player.equals(getDriver()))
+        if (getSpeed(true) == 0 || xxa == 0 || !player.equals(getDriver()) || isLocked(LockInfo.LockType.ROTATION))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
@@ -70,7 +71,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void jump(Player player, double xxa, double zza) {
-        if (getSpeed(true) == 0 || !player.equals(getDriver()))
+        if (getSpeed(true) == 0 || !player.equals(getDriver()) || isLocked(LockInfo.LockType.PITCH))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();
@@ -85,7 +86,7 @@ public class Airplane extends Vehicle<AirplaneModel> {
 
     @Override
     public void shift(Player player, double xxa, double zza) {
-        if (getSpeed(true) == 0 || !player.equals(getDriver()))
+        if (getSpeed(true) == 0 || !player.equals(getDriver()) || isLocked(LockInfo.LockType.PITCH))
             return;
 
         AirplaneEntity entity = (AirplaneEntity) ((CraftEntity) getEntity()).getHandle();

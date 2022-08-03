@@ -7,6 +7,7 @@ import com.wizardlybump17.vehicles.api.ButtonType;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.cache.VehicleModelCache;
 import com.wizardlybump17.vehicles.api.controller.EmptyMountController;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.listener.KeyListener;
 import com.wizardlybump17.vehicles.api.listener.VehicleKeyListener;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
@@ -40,6 +41,7 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
     private final ActiveModel megModel;
     private double speed;
     private final List<KeyListener> keyListeners = new ArrayList<>();
+    private final Map<LockInfo.LockType, Boolean> locks = new EnumMap<>(LockInfo.LockType.class);
 
     protected Vehicle(M model, String plate, ActiveModel megModel) {
         this.model = model;
@@ -275,6 +277,14 @@ public abstract class Vehicle<M extends VehicleModel<?>> {
         Entity entity = getEntity();
         vector.multiply(getSpeed());
         entity.setVelocity(vector.setY(y));
+    }
+
+    public void lock(LockInfo.LockType type, boolean lock) {
+        locks.put(type, lock);
+    }
+
+    public boolean isLocked(LockInfo.LockType type) {
+        return locks.getOrDefault(type, false);
     }
 
     public static boolean isVehicle(Entity entity) {

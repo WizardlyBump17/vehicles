@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
@@ -46,8 +47,9 @@ public class AirplaneModel extends VehicleModel<Airplane> {
             float maxPitch,
             float pitchSpeed,
             @NonNull FallSpeedInfo fallSpeed,
-            int floatingPrecision) {
-        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, floatingPrecision);
+            int floatingPrecision,
+            LockInfo lock) {
+        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, floatingPrecision, lock);
         this.pitchSpeed = pitchSpeed;
         this.maxPitch = maxPitch;
         this.minPitch = minPitch;
@@ -114,7 +116,8 @@ public class AirplaneModel extends VehicleModel<Airplane> {
                 ((Number) pitch.getOrDefault("max", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
                 (FallSpeedInfo) args.getOrDefault("fall-speed", FallSpeedInfo.defaultInfo()),
-                (int) args.getOrDefault("floating-precision", 2)
+                (int) args.getOrDefault("floating-precision", 2),
+                (LockInfo) args.getOrDefault("lock", LockInfo.defaultInfo())
         );
     }
 }

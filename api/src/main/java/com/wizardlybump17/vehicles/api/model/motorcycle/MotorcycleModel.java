@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AutomobileEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.info.SpeedInfo;
 import com.wizardlybump17.vehicles.api.model.AutomobileModel;
 import com.wizardlybump17.vehicles.api.vehicle.motorcycle.Motorcycle;
@@ -29,8 +30,9 @@ public class MotorcycleModel extends AutomobileModel<Motorcycle> {
             @NonNull String megModel,
             float rotationSpeed,
             float jumpHeight,
-            int floatingPrecision) {
-        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, floatingPrecision);
+            int floatingPrecision,
+            LockInfo lock) {
+        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, floatingPrecision, lock);
     }
 
     @Override
@@ -71,7 +73,8 @@ public class MotorcycleModel extends AutomobileModel<Motorcycle> {
                 (String) args.get("meg-model"),
                 ((Number) args.getOrDefault("rotation-speed", 0)).floatValue(),
                 ((Number) args.getOrDefault("jump-height", 0.6f)).floatValue(),
-                (int) args.getOrDefault("floating-precision", 2)
+                (int) args.getOrDefault("floating-precision", 2),
+                (LockInfo) args.getOrDefault("lock", LockInfo.defaultInfo())
         );
     }
 }

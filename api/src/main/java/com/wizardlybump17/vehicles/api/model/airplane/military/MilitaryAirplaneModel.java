@@ -7,6 +7,7 @@ import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
 import com.wizardlybump17.vehicles.api.info.DamageInfo;
+import com.wizardlybump17.vehicles.api.info.LockInfo;
 import com.wizardlybump17.vehicles.api.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
@@ -52,8 +53,9 @@ public class MilitaryAirplaneModel extends AirplaneModel {
             float pitchSpeed,
             @NonNull TNTInfo tntInfo,
             @NonNull FallSpeedInfo fallSpeed,
-            int floatingPrecision) {
-        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, fallSpeed, floatingPrecision);
+            int floatingPrecision,
+            LockInfo lock) {
+        super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, fallSpeed, floatingPrecision, lock);
         this.tntInfo = tntInfo;
         this.fallSpeed = fallSpeed;
     }
@@ -109,7 +111,8 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
                 (TNTInfo) args.getOrDefault("tnt", TNTInfo.defaultInfo()),
                 (FallSpeedInfo) args.getOrDefault("fall-speed", FallSpeedInfo.defaultInfo()),
-                (int) args.getOrDefault("floating-precision", 2)
+                (int) args.getOrDefault("floating-precision", 2),
+                (LockInfo) args.getOrDefault("lock", LockInfo.defaultInfo())
         );
     }
 
