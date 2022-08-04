@@ -1,5 +1,6 @@
 package com.wizardlybump17.vehicles.api.vehicle.airplane;
 
+import com.ticxo.modelengine.api.generator.blueprint.BlueprintBone;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.PartEntity;
 import com.wizardlybump17.vehicles.api.info.TNTInfo;
@@ -24,7 +25,7 @@ public class MilitaryAirplane extends Airplane {
     @Override
     public boolean onLeftClick(Player player, EquipmentSlot hand) {
         if (player.equals(getDriver()) && tntDelay.getOrDefault(player, System.currentTimeMillis()) <= System.currentTimeMillis()) {
-            shootTnt();
+            shootTnts();
             tntDelay.put(player, System.currentTimeMillis() + getModel().getTntInfo().getDelay());
         }
         return true;
@@ -33,26 +34,33 @@ public class MilitaryAirplane extends Airplane {
     @Override
     public void onDamage(Player player) {
         if (player.equals(getDriver()) && tntDelay.getOrDefault(player, System.currentTimeMillis()) <= System.currentTimeMillis()) {
-            shootTnt();
+            shootTnts();
             tntDelay.put(player, System.currentTimeMillis() + getModel().getTntInfo().getDelay());
         }
     }
 
-    public void shootTnt() {
+    public void shootTnts() {
         PartEntity part = getMegModel().getPartEntity("tnts");
-        if (part == null)
+        BlueprintBone bone = getMegModel().getBlueprint().getBones().get("tnts");
+        if (bone == null)
             return;
 
-        Location location = part.getWorldPosition();
-        TNTInfo info = getModel().getTntInfo();
+        for (Map.Entry<String, BlueprintBone> entry : bone.getChildren().entrySet()) {
+            if (!entry.getKey().toLowerCase().startsWith("tnt"))
+                continue;
 
-        if (info.isUseDriverRotation() && getDriver() != null) {
-            Location driverLocation = getDriver().getLocation();
-            location.setYaw(driverLocation.getYaw());
-            location.setPitch(info.fixPitch(driverLocation.getPitch()));
-        } else
-            location.setYaw(((CraftEntity) getEntity()).getHandle().getBukkitYaw());
-        getModel().createTNT(location);
+            PartEntity child = part.getChild(entry.getKey());
+            Location location = child.getWorldPosition();
+            TNTInfo info = getModel().getTntInfo();
+
+            if (info.isUseDriverRotation() && getDriver() != null) {
+                Location driverLocation = getDriver().getLocation();
+                location.setYaw(driverLocation.getYaw());
+                location.setPitch(info.fixPitch(driverLocation.getPitch()));
+            } else
+                location.setYaw(((CraftEntity) getEntity()).getHandle().getBukkitYaw());
+            getModel().createTNT(location);
+        }
     }
 
     @Override
