@@ -1,8 +1,10 @@
 package com.wizardlybump17.vehicles.api.model.airplane.military;
 
 import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.generator.blueprint.BlueprintBone;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
+import com.ticxo.modelengine.api.model.PartEntity;
 import com.ticxo.modelengine.api.model.mount.handler.IMountHandler;
 import com.wizardlybump17.vehicles.api.Vehicles;
 import com.wizardlybump17.vehicles.api.entity.AirplaneEntity;
@@ -24,8 +26,10 @@ import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @SerializableAs("military-airplane")
@@ -39,6 +43,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     private final TNTInfo tntInfo;
     @NonNull
     private final FallSpeedInfo fallSpeed;
+    private final Map<String, Vector> tntsDirection = new HashMap<>();
 
     public MilitaryAirplaneModel(
             Vehicles plugin,
@@ -79,6 +84,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         modeledEntity.addActiveModel(model);
         modeledEntity.setInvisible(true);
         modeledEntity.detectPlayers();
+        initTNTDirections(model);
 
         IMountHandler mountHandler = modeledEntity.getMountHandler();
         mountHandler.setSteerable(true);
@@ -88,11 +94,40 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         return airplane;
     }
 
+    private void initTNTDirections(ActiveModel model) {
+        if (!tntsDirection.isEmpty())
+            return;
+
+        PartEntity part = model.getPartEntity("tnts");
+        if (part == null)
+            return;
+
+        BlueprintBone bone = model.getBlueprint().getBones().get("tnts");
+        if (bone == null)
+            return;
+
+        for (Map.Entry<String, BlueprintBone> entry : bone.getChildren().entrySet()) {
+            if (!entry.getKey().toLowerCase().startsWith("tnt"))
+                continue;
+
+            BlueprintBone tnt = entry.getValue();
+            setTNTDirection(entry.getKey(), new Vector(Math.toDegrees(-tnt.getLocalRotationX()), Math.toDegrees(-tnt.getLocalRotationY()), Math.toDegrees(tnt.getLocalRotationZ())));
+        }
+    }
+
     @Override
     public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = super.serialize();
         map.put("tnt", tntInfo);
         return map;
+    }
+
+    public void setTNTDirection(String bone, Vector direction) {
+        tntsDirection.put(bone, direction);
+    }
+
+    public Vector getTNTDirection(String bone) {
+        return tntsDirection.get(bone);
     }
 
     @SuppressWarnings("unchecked")
@@ -116,11 +151,11 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         );
     }
 
-    public TNTPrimed createTNT(Location location) {
+    public TNTPrimed createTNT(Location location, Vector direction) {
         return location.getWorld().spawn(location, TNTPrimed.class, tnt -> {
             tnt.setFuseTicks(tntInfo.getFuseTicks());
             tnt.getPersistentDataContainer().set(TNT_KEY, PersistentDataType.STRING, getName());
-            tnt.setVelocity(location.getDirection().multiply(tntInfo.getDirection()));
+            tnt.setVelocity(direction);
         });
     }
 
