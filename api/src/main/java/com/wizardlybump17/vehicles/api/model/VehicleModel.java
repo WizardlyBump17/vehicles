@@ -66,7 +66,8 @@ public abstract class VehicleModel<V extends Vehicle<?>> implements Configuratio
                 "meg-model", megModel,
                 "rotation-speed", rotationSpeed,
                 "jump-height", jumpHeight,
-                "floating-precision", floatingPrecision
+                "floating-precision", floatingPrecision,
+                "lock", lock
         ));
     }
 }
