@@ -69,8 +69,6 @@ public class VehicleListener implements Listener {
         if (optional.isEmpty())
             return;
 
-        event.setCancelled(true);
-
         optional.get().removeEntity(event.getPlayer());
     }
 
