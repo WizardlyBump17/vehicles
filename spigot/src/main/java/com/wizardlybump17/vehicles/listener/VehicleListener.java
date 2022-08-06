@@ -118,7 +118,8 @@ public class VehicleListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onExplode(EntityExplodeEvent event) {
-        Pair<String, String> data = MilitaryAirplaneModel.getData(event.getEntity());
+        Entity entity = event.getEntity();
+        Pair<String, String> data = MilitaryAirplaneModel.getData(entity);
         if (data == null)
             return;
 
@@ -133,6 +134,7 @@ public class VehicleListener implements Listener {
         event.setCancelled(true);
 
         TNTInfo info = militaryModel.getTNTInfo(data.getSecond());
-        event.getEntity().getWorld().createExplosion(event.getLocation(), info.getPower(), info.isSetFire(), info.isBreakBlocks());
+        entity.getPersistentDataContainer().remove(MilitaryAirplaneModel.TNT_KEY);
+        entity.getWorld().createExplosion(event.getLocation(), info.getPower(), info.isSetFire(), info.isBreakBlocks(), entity);
     }
 }
