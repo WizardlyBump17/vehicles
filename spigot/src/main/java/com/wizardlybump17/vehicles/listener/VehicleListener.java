@@ -6,6 +6,7 @@ import com.wizardlybump17.vehicles.api.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.model.VehicleModel;
 import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
 import com.wizardlybump17.vehicles.api.vehicle.Vehicle;
+import com.wizardlybump17.wlib.object.Pair;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -119,7 +120,11 @@ public class VehicleListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onExplode(EntityExplodeEvent event) {
-        String name = MilitaryAirplaneModel.getModelName(event.getEntity());
+        Pair<String, String> data = MilitaryAirplaneModel.getData(event.getEntity());
+        if (data == null)
+            return;
+
+        String name = data.getFirst();
         VehicleModel<?> model = modelCache.get(name).orElse(null);
         if (model == null)
             return;
@@ -129,7 +134,7 @@ public class VehicleListener implements Listener {
 
         event.setCancelled(true);
 
-        TNTInfo info = militaryModel.getTntInfo();
+        TNTInfo info = militaryModel.getTNTInfo(data.getSecond());
         event.getEntity().getWorld().createExplosion(event.getLocation(), info.getPower(), info.isSetFire(), info.isBreakBlocks());
     }
 }

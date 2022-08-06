@@ -14,53 +14,44 @@ import java.util.Map;
 @SerializableAs("tnt-info")
 public class TNTInfo implements ConfigurationSerializable {
 
+    private String name;
     private int fuseTicks;
     private Vector direction;
-    private boolean useDriverRotation;
-    private float minPitch;
-    private float maxPitch;
     private long delay;
     private float power;
     private boolean breakBlocks;
     private boolean setFire;
-
-    public float fixPitch(float pitch) {
-        if (pitch < minPitch)
-            return minPitch;
-        return Math.min(pitch, maxPitch);
-    }
+    private Vector rotation;
 
     @NotNull
     @Override
     public Map<String, Object> serialize() {
         return Map.of(
+                "name", name,
                 "fuse-ticks", fuseTicks,
                 "direction", direction,
-                "use-driver-rotation", useDriverRotation,
-                "min-pitch", minPitch,
-                "max-pitch", maxPitch,
                 "delay", delay,
                 "power", power,
                 "break-blocks", breakBlocks,
-                "set-fire", setFire
+                "set-fire", setFire,
+                "rotation", rotation
         );
     }
 
     public static TNTInfo deserialize(Map<String, Object> map) {
         return new TNTInfo(
+                (String) map.getOrDefault("name", "tnt"),
                 (int) map.getOrDefault("fuse-ticks", 80),
                 (Vector) map.getOrDefault("direction", new Vector(0, 0, 0)),
-                (boolean) map.getOrDefault("use-driver-rotation", false),
-                ((Number) map.getOrDefault("min-pitch", 45f)).floatValue(),
-                ((Number) map.getOrDefault("max-pitch", -45f)).floatValue(),
                 ((Number) map.getOrDefault("delay", 0L)).longValue(),
                 ((Number) map.getOrDefault("power", 3)).floatValue(),
                 (boolean) map.getOrDefault("break-blocks", false),
-                (boolean) map.getOrDefault("set-fire", false)
+                (boolean) map.getOrDefault("set-fire", false),
+                (Vector) map.getOrDefault("rotation", new Vector(0, 0, 0))
         );
     }
 
     public static TNTInfo defaultInfo() {
-        return new TNTInfo(80, new Vector(0, 0, 0), false, 45, -45, 0, 3, false, false);
+        return new TNTInfo("tnt", 80, new Vector(0, 0, 0), 0, 3, false, false, new Vector(0, 0, 0));
     }
 }

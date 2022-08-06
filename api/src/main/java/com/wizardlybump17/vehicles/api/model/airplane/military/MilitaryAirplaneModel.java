@@ -15,6 +15,8 @@ import com.wizardlybump17.vehicles.api.info.airplane.AirplaneSpeedInfo;
 import com.wizardlybump17.vehicles.api.info.airplane.FallSpeedInfo;
 import com.wizardlybump17.vehicles.api.model.airplane.AirplaneModel;
 import com.wizardlybump17.vehicles.api.vehicle.airplane.MilitaryAirplane;
+import com.wizardlybump17.vehicles.util.MEGUtil;
+import com.wizardlybump17.wlib.object.Pair;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -25,12 +27,13 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SerializableAs("military-airplane")
 @Getter
@@ -38,12 +41,14 @@ import java.util.Map;
 public class MilitaryAirplaneModel extends AirplaneModel {
 
     public static final NamespacedKey TNT_KEY = new NamespacedKey(Vehicles.getInstance(), "tnt");
+    public static final NamespacedKey TNT_NAME = new NamespacedKey(Vehicles.getInstance(), "name");
+    public static final NamespacedKey TNT_MODEL = new NamespacedKey(Vehicles.getInstance(), "model");
 
     @NonNull
     private final TNTInfo tntInfo;
     @NonNull
     private final FallSpeedInfo fallSpeed;
-    private final Map<String, Vector> tntsDirection = new HashMap<>();
+    private final Map<String, TNTInfo> tnts = new ConcurrentHashMap<>();
 
     public MilitaryAirplaneModel(
             Vehicles plugin,
@@ -84,7 +89,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         modeledEntity.addActiveModel(model);
         modeledEntity.setInvisible(true);
         modeledEntity.detectPlayers();
-        initTNTDirections(model);
+        reloadTNTDirections(model);
 
         IMountHandler mountHandler = modeledEntity.getMountHandler();
         mountHandler.setSteerable(true);
@@ -94,9 +99,8 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         return airplane;
     }
 
-    private void initTNTDirections(ActiveModel model) {
-        if (!tntsDirection.isEmpty())
-            return;
+    private void reloadTNTDirections(ActiveModel model) {
+        tnts.clear();
 
         PartEntity part = model.getPartEntity("tnts");
         if (part == null)
@@ -111,8 +115,61 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 continue;
 
             BlueprintBone tnt = entry.getValue();
-            setTNTDirection(entry.getKey(), new Vector(Math.toDegrees(-tnt.getLocalRotationX()), Math.toDegrees(-tnt.getLocalRotationY()), Math.toDegrees(tnt.getLocalRotationZ())));
+            reloadTNT(entry.getKey(), tnt);
         }
+    }
+
+    private Vector getDirection(BlueprintBone bone) {
+        return new Vector(Math.toDegrees(-bone.getLocalRotationX()), Math.toDegrees(-bone.getLocalRotationY()), Math.toDegrees(bone.getLocalRotationZ()));
+    }
+
+    private void reloadTNT(String name, BlueprintBone bone) {
+        TNTInfo defaultInfo = TNTInfo.defaultInfo();
+
+        BlueprintBone fuseTicksBone = MEGUtil.getBone(bone, "fuse_ticks");
+        int fuseTicks = defaultInfo.getFuseTicks();
+        if (fuseTicksBone != null)
+            fuseTicks = getDirection(fuseTicksBone).getBlockX();
+
+        BlueprintBone directionBone = MEGUtil.getBone(bone, "direction");
+        Vector direction = defaultInfo.getDirection();
+        if (directionBone != null)
+            direction = getDirection(directionBone);
+
+        long delay = defaultInfo.getDelay();
+        BlueprintBone delayBone = MEGUtil.getBone(bone, "delay");
+        if (delayBone != null)
+            delay = getDirection(delayBone).getBlockX();
+
+        float power = defaultInfo.getPower();
+        BlueprintBone powerBone = MEGUtil.getBone(bone, "power");
+        if (powerBone != null)
+            power = (float) getDirection(powerBone).getX();
+
+        boolean setFire = defaultInfo.isSetFire();
+        if (MEGUtil.getBone(bone, "set_fire") != null)
+            setFire = true;
+
+        boolean breakBlocks = defaultInfo.isBreakBlocks();
+        if (MEGUtil.getBone(bone, "break_blocks") != null)
+            breakBlocks = true;
+
+        Vector rotation = defaultInfo.getRotation();
+        BlueprintBone rotationBone = MEGUtil.getBone(bone, "rotation");
+        if (rotationBone != null)
+            rotation = getDirection(rotationBone);
+
+        TNTInfo info = new TNTInfo(
+                name,
+                fuseTicks,
+                direction,
+                delay,
+                power,
+                setFire,
+                breakBlocks,
+                rotation
+        );
+        tnts.put(name, info);
     }
 
     @Override
@@ -122,12 +179,12 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         return map;
     }
 
-    public void setTNTDirection(String bone, Vector direction) {
-        tntsDirection.put(bone, direction);
+    public void setTNTInfo(String bone, TNTInfo info) {
+        tnts.put(bone, info);
     }
 
-    public Vector getTNTDirection(String bone) {
-        return tntsDirection.get(bone);
+    public TNTInfo getTNTInfo(String bone) {
+        return tnts.get(bone);
     }
 
     @SuppressWarnings("unchecked")
@@ -151,19 +208,34 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         );
     }
 
-    public TNTPrimed createTNT(Location location, Vector direction) {
+    public TNTPrimed createTNT(Location location, TNTInfo info) {
         return location.getWorld().spawn(location, TNTPrimed.class, tnt -> {
-            tnt.setFuseTicks(tntInfo.getFuseTicks());
-            tnt.getPersistentDataContainer().set(TNT_KEY, PersistentDataType.STRING, getName());
+            markTNTEntity(tnt, info);
+
+            tnt.setFuseTicks(info.getFuseTicks());
+
+            Vector direction = location.getDirection();
+            direction.multiply(info.getDirection()).setY(info.getDirection().getY());
+
             tnt.setVelocity(direction);
         });
     }
 
-    public static String getModelName(Entity entity) {
-        return entity.getPersistentDataContainer().get(TNT_KEY, PersistentDataType.STRING);
+    private void markTNTEntity(Entity entity, TNTInfo info) {
+        PersistentDataContainer container = entity.getPersistentDataContainer();
+        PersistentDataContainer data = container.getAdapterContext().newPersistentDataContainer();
+        data.set(TNT_NAME, PersistentDataType.STRING, info.getName());
+        data.set(TNT_MODEL, PersistentDataType.STRING, getName());
+        container.set(TNT_KEY, PersistentDataType.TAG_CONTAINER, data);
     }
 
-    public boolean isTNT(Entity entity) {
-        return getName().equals(getModelName(entity));
+    public static Pair<String, String> getData(Entity entity) {
+        PersistentDataContainer container = entity.getPersistentDataContainer();
+        PersistentDataContainer data = container.get(TNT_KEY, PersistentDataType.TAG_CONTAINER);
+
+        if (data == null || !data.has(TNT_NAME, PersistentDataType.STRING) || !data.has(TNT_MODEL, PersistentDataType.STRING))
+            return null;
+
+        return new Pair<>(data.get(TNT_MODEL, PersistentDataType.STRING), data.get(TNT_NAME, PersistentDataType.STRING));
     }
 }

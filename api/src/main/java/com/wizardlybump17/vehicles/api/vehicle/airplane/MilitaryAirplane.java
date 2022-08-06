@@ -5,11 +5,9 @@ import com.ticxo.modelengine.api.model.PartEntity;
 import com.wizardlybump17.vehicles.api.info.TNTInfo;
 import com.wizardlybump17.vehicles.api.model.airplane.military.MilitaryAirplaneModel;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,23 +38,18 @@ public class MilitaryAirplane extends Airplane {
     }
 
     public void shootTnts() {
-        for (Map.Entry<String, Vector> entry : getModel().getTntsDirection().entrySet()) {
-            PartEntity part = getMegModel().getPartEntity("tnts").getChild(entry.getKey());
-            Location location = part.getWorldPosition();
-            TNTInfo info = getModel().getTntInfo();
+        PartEntity part = getMegModel().getPartEntity("tnts");
 
-            if (info.isUseDriverRotation() && getDriver() != null) {
-                Location driverLocation = getDriver().getLocation();
-                location.setYaw(driverLocation.getYaw());
-                location.setPitch(info.fixPitch(driverLocation.getPitch()));
-                getModel().createTNT(location, location.getDirection().multiply(info.getDirection()));
-                return;
-            }
+        for (Map.Entry<String, TNTInfo> entry : getModel().getTnts().entrySet()) {
+            PartEntity entity = part.getChild(entry.getKey());
+            TNTInfo info = entry.getValue();
 
-            location.setYaw(((CraftEntity) getEntity()).getHandle().getBukkitYaw());
-            location.setPitch(0);
-            Vector vector = entry.getValue();
-            getModel().createTNT(location, location.getDirection().multiply(vector).setY(vector.getY()));
+            Location location = entity.getWorldPosition();
+
+            location.setYaw((float) (getEntity().getLocation().getYaw() + info.getRotation().getX()));
+            location.setPitch((float) info.getRotation().getY());
+
+            getModel().createTNT(location, info);
         }
     }
 
