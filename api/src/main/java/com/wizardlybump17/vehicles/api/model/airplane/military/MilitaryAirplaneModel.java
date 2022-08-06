@@ -30,7 +30,6 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,8 +43,6 @@ public class MilitaryAirplaneModel extends AirplaneModel {
     public static final NamespacedKey TNT_NAME = new NamespacedKey(Vehicles.getInstance(), "name");
     public static final NamespacedKey TNT_MODEL = new NamespacedKey(Vehicles.getInstance(), "model");
 
-    @NonNull
-    private final TNTInfo tntInfo;
     @NonNull
     private final FallSpeedInfo fallSpeed;
     private final Map<String, TNTInfo> tnts = new ConcurrentHashMap<>();
@@ -61,12 +58,10 @@ public class MilitaryAirplaneModel extends AirplaneModel {
             float minPitch,
             float maxPitch,
             float pitchSpeed,
-            @NonNull TNTInfo tntInfo,
             @NonNull FallSpeedInfo fallSpeed,
             int floatingPrecision,
             LockInfo lock) {
         super(plugin, name, speed, damage, megModel, rotationSpeed, jumpHeight, minPitch, maxPitch, pitchSpeed, fallSpeed, floatingPrecision, lock);
-        this.tntInfo = tntInfo;
         this.fallSpeed = fallSpeed;
     }
 
@@ -110,17 +105,18 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         if (bone == null)
             return;
 
+        bone.setGlobalOffset(0, 0, 0);
+        bone.setLocalOffset(0, 0, 0);
+
         for (Map.Entry<String, BlueprintBone> entry : bone.getChildren().entrySet()) {
             if (!entry.getKey().toLowerCase().startsWith("tnt"))
                 continue;
 
             BlueprintBone tnt = entry.getValue();
+            tnt.setGlobalOffset(0, 0, 0);
+            tnt.setLocalOffset(0, 0, 0);
             reloadTNT(entry.getKey(), tnt);
         }
-    }
-
-    private Vector getDirection(BlueprintBone bone) {
-        return new Vector(Math.toDegrees(-bone.getLocalRotationX()), Math.toDegrees(-bone.getLocalRotationY()), Math.toDegrees(bone.getLocalRotationZ()));
     }
 
     private void reloadTNT(String name, BlueprintBone bone) {
@@ -129,22 +125,22 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         BlueprintBone fuseTicksBone = MEGUtil.getBone(bone, "fuse_ticks");
         int fuseTicks = defaultInfo.getFuseTicks();
         if (fuseTicksBone != null)
-            fuseTicks = getDirection(fuseTicksBone).getBlockX();
+            fuseTicks = MEGUtil.getPosition(fuseTicksBone, bone).getBlockX();
 
         BlueprintBone directionBone = MEGUtil.getBone(bone, "direction");
         Vector direction = defaultInfo.getDirection();
         if (directionBone != null)
-            direction = getDirection(directionBone);
+            direction = MEGUtil.getPosition(directionBone, bone);
 
         long delay = defaultInfo.getDelay();
         BlueprintBone delayBone = MEGUtil.getBone(bone, "delay");
         if (delayBone != null)
-            delay = getDirection(delayBone).getBlockX();
+            delay = MEGUtil.getPosition(delayBone, bone).getBlockX();
 
         float power = defaultInfo.getPower();
         BlueprintBone powerBone = MEGUtil.getBone(bone, "power");
         if (powerBone != null)
-            power = (float) getDirection(powerBone).getX();
+            power = (float) MEGUtil.getPosition(powerBone, bone).getX();
 
         boolean setFire = defaultInfo.isSetFire();
         if (MEGUtil.getBone(bone, "set_fire") != null)
@@ -157,7 +153,7 @@ public class MilitaryAirplaneModel extends AirplaneModel {
         Vector rotation = defaultInfo.getRotation();
         BlueprintBone rotationBone = MEGUtil.getBone(bone, "rotation");
         if (rotationBone != null)
-            rotation = getDirection(rotationBone);
+            rotation = MEGUtil.getRotation(rotationBone);
 
         TNTInfo info = new TNTInfo(
                 name,
@@ -170,13 +166,6 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 rotation
         );
         tnts.put(name, info);
-    }
-
-    @Override
-    public @NotNull Map<String, Object> serialize() {
-        Map<String, Object> map = super.serialize();
-        map.put("tnt", tntInfo);
-        return map;
     }
 
     public void setTNTInfo(String bone, TNTInfo info) {
@@ -201,7 +190,6 @@ public class MilitaryAirplaneModel extends AirplaneModel {
                 ((Number) pitch.getOrDefault("min", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("max", 90f)).floatValue(),
                 ((Number) pitch.getOrDefault("speed", 0f)).floatValue(),
-                (TNTInfo) args.getOrDefault("tnt", TNTInfo.defaultInfo()),
                 (FallSpeedInfo) args.getOrDefault("fall-speed", FallSpeedInfo.defaultInfo()),
                 (int) args.getOrDefault("floating-precision", 2),
                 (LockInfo) args.getOrDefault("lock", LockInfo.defaultInfo())

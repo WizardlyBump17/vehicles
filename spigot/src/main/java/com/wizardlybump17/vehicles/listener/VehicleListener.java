@@ -134,7 +134,6 @@ public class VehicleListener implements Listener {
         event.setCancelled(true);
 
         TNTInfo info = militaryModel.getTNTInfo(data.getSecond());
-        entity.getPersistentDataContainer().remove(MilitaryAirplaneModel.TNT_KEY);
         entity.getWorld().createExplosion(event.getLocation(), info.getPower(), info.isSetFire(), info.isBreakBlocks());
     }
 }
